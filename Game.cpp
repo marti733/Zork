@@ -59,20 +59,25 @@ void Game::runGame(string filename) {
 	string command;
 	//Run game until exit condition or error occurs
 	while(this->status){
-		std::cout << ">";
+		bool check = checkTriggers();
+
+		std::cout << "> ";
 		getline(cin, command);
 
-		bool check = checkTriggers();
 		if (check)
 			executeCommand(command);
 	}
 }
 
 bool Game::checkTriggers(){
-	return true;
+	bool check = true;
+
+	return check;
 }
 
-void executeCommand(string command) {
+void Game::executeCommand(string command) {
+	if(command.at(0) == 'q' || command.at(0) == 'Q') // Checks for quit condition
+		this->setStatus(false);
 
 }
 
