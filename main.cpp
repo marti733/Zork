@@ -13,18 +13,17 @@
 using namespace rapidxml;
 using namespace std;
 
-int main(int arc, char ** argv) {
+int main(int argc, char ** argv) {
 
-	std::ifstream file("sample.xml");
-
-	if(!(file.is_open())){
-		std::cout << "Cannot open file!" << std::endl;
+	/*if (argc < 2) {
+		std::cout << "Error expected input format: Zork filename.xml" << std::endl;
 		return EXIT_FAILURE;
- 	}
+	}*/
+
+	string file = "sample.xml";
 
 	Game* g = new Game(1);
-
-	std::cout << g->getStatus() << std::endl;
+	g->runGame(file);
 
 	return EXIT_SUCCESS;
 }

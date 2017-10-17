@@ -21,6 +21,8 @@ public:
 	vector<Item> items;
 	vector<Container> containers;
 	vector<Creature> creatures;
+
+	setupMap
 };
 
 
