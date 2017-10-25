@@ -5,6 +5,10 @@
  *      Author: cheyenne
  */
 
+#include "Container.h"
 
+Container::Container(xml_node<char>* name){
+
+}
 
 

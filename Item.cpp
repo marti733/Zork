@@ -5,6 +5,10 @@
  *      Author: cheyenne
  */
 
+#include "Item.h"
 
+Item::Item(xml_node<char>* name){
+
+}
 
 

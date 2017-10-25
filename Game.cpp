@@ -149,13 +149,14 @@ void Game::parseXML(xml_node<> * root){
 		if(string((root->name())) == string("room")) {
 			Room* room = new Room(root->first_node());
 			rooms[room->name] = room;
-
 		}
 		else if(string((root->name())) == string("item")) {
-
+			Item* item = new Item(root->first_node());
+			items[item->name] = item;
 		}
 		else if(string((root->name())) == string("container")) {
-
+			Container* container = new Container(root->first_node());
+			containers[container->name] = container;
 		}
 		else if(string((root->name())) == string("creature")) {
 

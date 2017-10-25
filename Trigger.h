@@ -5,8 +5,11 @@
  *      Author: cheyenne
  */
 #include <string>
-#include <vector>
+#include <map>
 #include "Condition.h"
+#include "rapidxml.hpp"
+
+using namespace rapidxml;
 
 using namespace std;
 
@@ -14,13 +17,14 @@ using namespace std;
 #define TRIGGER_H_
 
 class Trigger {
-private:
-	vector<Condition> conditions;
+public:
+	map<string, Condition*> conditions;
 	string command;
 	string type;
 	string print;
-public:
-	Trigger() {}
+	string name;
+
+	Trigger(xml_node<char>* name);
 	virtual ~Trigger() {}
 };
 

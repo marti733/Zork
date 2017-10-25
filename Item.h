@@ -6,18 +6,21 @@
  */
 
 #include <string>
+#include "rapidxml.hpp"
+
+using namespace rapidxml;
+using namespace std;
 
 #ifndef ITEM_H_
 #define ITEM_H_
 
 class Item{
-private:
-	std::string name;
-	std::string status;
-	std::string writing;
-
 public:
-	Item() {}
+	string name;
+	string status;
+	string writing;
+
+	Item(xml_node<char>* name);
 	virtual ~Item() {}
 };
 

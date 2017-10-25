@@ -5,6 +5,13 @@
  *      Author: cheyenne
  */
 
+#include "Trigger.h"
+
+using namespace std;
+
+Trigger::Trigger(xml_node<char>* name){
+
+}
 
 
 
