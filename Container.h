@@ -13,7 +13,7 @@ using namespace std;
 #ifndef CONTAINER_H_
 #define CONTAINER_H_
 
-class Container : public Room {
+class Container{
 private:
 	string name;
 	string status;

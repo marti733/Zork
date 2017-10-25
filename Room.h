@@ -7,21 +7,21 @@
 #include <string>
 #include <vector>
 #include"Container.h"
+#include "rapidxml.hpp"
 
+using namespace rapidxml;
 using namespace std;
 
 #ifndef ROOM_H_
 #define ROOM_H_
 
-class Room : public Map{
-private:
+class Room{
+public:
 	string description;
 	string name;
-
 	vector<Container> containers;
 
-public:
-	Room () {}
+	Room (xml_node<char>* name);
 	virtual ~Room() {}
 };
 

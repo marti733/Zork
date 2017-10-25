@@ -5,7 +5,15 @@
  *      Author: cheyenne
  */
 #include <string>
+#include <vector>
+#include <map>
+#include "Room.h"
+#include "Item.h"
+#include "Container.h"
+#include "Creature.h"
+#include "rapidxml.hpp"
 
+using namespace rapidxml;
 using namespace std;
 
 #ifndef GAME_H_
@@ -14,6 +22,10 @@ using namespace std;
 class Game {
 private:
 	bool status;
+	map<string, Room*> rooms;
+	map<string, Container*> containers;
+	map<string, Creature*> creatures;
+	map<string, Item*> items;
 
 public:
 	Game(int i) : status(true) {}
@@ -25,6 +37,7 @@ public:
 	bool getSetup(string);
 	bool checkTriggers();
 	void executeCommand(string);
+	void parseXML(xml_node<> *);
 };
 
 

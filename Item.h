@@ -10,7 +10,7 @@
 #ifndef ITEM_H_
 #define ITEM_H_
 
-class Item : public Container {
+class Item{
 private:
 	std::string name;
 	std::string status;

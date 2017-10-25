@@ -7,12 +7,12 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <map>
 #include <istream>
 #include "Game.h"
 #include "rapidxml.hpp"
 
 using namespace rapidxml;
-
 using namespace std;
 
 bool Game::getStatus() {
@@ -47,11 +47,15 @@ bool Game::getSetup(string filename) {
 
 	if (root == nullptr)
 		setStatus(false);
-	else
+	else {
 		setStatus(true);
+		parseXML(root);
+	}
 
 	return getStatus();
 }
+
+
 
 void Game::runGame(string filename) {
 	this->getSetup(filename);
@@ -116,6 +120,18 @@ void Game::executeCommand(string command) {
 	else if (command.find("w") != string::npos){
 
 	}
+	else if (command.find("add") != string::npos){
+
+	}
+	else if (command.find("delete") != string::npos){
+
+	}
+	else if (command.find("update") != string::npos){
+
+	}
+	else if (command.find("game over") != string::npos){
+		std::cout << "Victory!" << std::endl;
+	}
 	//FOR TESTING REMOVE BEFORE DEMO
 	else if (command.find("q") != string::npos){
 		this->status = false;
@@ -125,6 +141,28 @@ void Game::executeCommand(string command) {
 		std::cout << "That command doesn't exist!" << std::endl;
 	}
 
+}
+
+//Read in xml data structure
+void Game::parseXML(xml_node<> * root){
+	while(root != nullptr){
+		if(string((root->name())) == string("room")) {
+			Room* room = new Room(root->first_node());
+			rooms[room->name] = room;
+
+		}
+		else if(string((root->name())) == string("item")) {
+
+		}
+		else if(string((root->name())) == string("container")) {
+
+		}
+		else if(string((root->name())) == string("creature")) {
+
+		}
+
+		root = root->next_sibling();
+	}
 }
 
 
