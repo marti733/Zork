@@ -15,16 +15,16 @@ Room::Room(xml_node<> * root){
 		v = root->value();
 
 		if(n == "name"){
-			this->name = n;
+			this->name = v;
 		}
 		else if (n == "description"){
-			this->description = n;
+			this->description = v;
 		}
 		else if (n == "status"){
-			this->status = n;
+			this->status = v;
 		}
 		else if (n == "type"){
-			this->type = n;
+			this->type = v;
 		}
 		else if (n == "item"){
 			Item* item = new Item(root);

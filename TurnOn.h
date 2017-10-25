@@ -5,7 +5,9 @@
  *      Author: cheyenne
  */
 #include <string>
+#include "rapidxml.hpp"
 
+using namespace rapidxml;
 using namespace std;
 
 #ifndef TURNON_H_
@@ -16,7 +18,7 @@ private:
 	string print;
 	string action;
 public:
-	TurnOn() {}
+	TurnOn(xml_node<>* root);
 	virtual ~TurnOn() {}
 };
 

@@ -6,6 +6,8 @@
  */
 
 #include <string>
+#include "TurnOn.h"
+#include "Trigger.h"
 #include "rapidxml.hpp"
 
 using namespace rapidxml;
@@ -19,8 +21,11 @@ public:
 	string name;
 	string status;
 	string writing;
+	string description;
+	TurnOn* turnon;
+	Trigger* trigger;
 
-	Item(xml_node<char>* name);
+	Item(xml_node<>* node);
 	virtual ~Item() {}
 };
 

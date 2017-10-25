@@ -5,8 +5,8 @@ Inputs: Filename.xml
 Structure:
 
 Game -> Room, item, container, creature
-Room -> Description, item, trigger, border, name, creature, container, status, type
-Item -> Name, writing, status, turnon
+x Room -> Description, item, trigger, border, name, creature, container, status, type
+x Item -> Name, writing, status, turnon
 Container -> Name, item, status, accept, trigger
 Creature -> Name, vulnerability, attack, trigger
 Trigger -> Command, condition, type, print

@@ -5,6 +5,10 @@
  *      Author: cheyenne
  */
 
+#include "TurnOn.h"
 
+TurnOn::TurnOn(xml_node<>* root){
+
+}
 
 
