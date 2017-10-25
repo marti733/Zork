@@ -5,19 +5,20 @@
  *      Author: cheyenne
  */
 #include <string>
+#include "rapidxml.hpp"
 
+using namespace rapidxml;
 using namespace std;
 
 #ifndef BORDER_H_
 #define BORDER_H_
 
 class Border{
-private:
+public:
 	string direction;
 	string name;
 
-public:
-	Border(){}
+	Border(xml_node<char>* name);
 	virtual ~Border() {}
 };
 

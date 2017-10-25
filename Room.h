@@ -25,7 +25,7 @@ public:
 	string name;
 	string type;
 	string status;
-	Border border;
+	Border* border;
 	map<string, Container*> containers;
 	map<string, Trigger*> triggers;
 	map<string, Item*> items;

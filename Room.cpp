@@ -34,6 +34,9 @@ Room::Room(xml_node<> * root){
 			Trigger* trigger = new Trigger(root);
 			this->triggers[trigger->name] = trigger;
 		}
+		else if (n == "border"){
+			this->border = new Border(root);
+		}
 
 		root = root->next_sibling();
 	}
