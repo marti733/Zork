@@ -7,7 +7,7 @@ Structure:
 Game -> Room, item, container, creature
 x Room -> Description, item, trigger, border, name, creature, container, status, type
 x Item -> Name, writing, status, turnon
-Container -> Name, item, status, accept, trigger
+x Container -> Name, item, status, accept, trigger
 Creature -> Name, vulnerability, attack, trigger
 Trigger -> Command, condition, type, print
 Border -> Direction, name

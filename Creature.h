@@ -5,6 +5,8 @@
  *      Author: cheyenne
  */
 #include <string>
+#include "Attack.h"
+#include "Trigger.h"
 #include "rapidxml.hpp"
 
 using namespace rapidxml;
@@ -16,9 +18,13 @@ using namespace std;
 class Creature {
 public:
 	string name;
+	string status;
+	string description;
+	Attack* attack;
 	string vulnerability;
+	Trigger* trigger;
 
-	Creature(xml_node<char>* name);
+	Creature(xml_node<>*);
 	virtual ~Creature() {}
 };
 

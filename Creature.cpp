@@ -7,8 +7,36 @@
 
 #include "Creature.h"
 
-Creature::Creature(xml_node<char>* name){
+Creature::Creature(xml_node<>* root){
+	string n;
+	string v;
 
+	while(root != nullptr) {
+		n = root->name();
+		v = root->value();
+
+		if(n == "name"){
+			this->name = v;
+		}
+		else if (n == "description"){
+			this->description = v;
+		}
+		else if (n == "status"){
+			this->status = v;
+		}
+		else if (n == "vulnerability"){
+			this->vulnerability = v;
+		}
+		else if (n == "attack"){
+			this->attack = new Attack(root);
+		}
+		else if (n == "trigger"){
+			this->trigger = new Trigger(root);
+		}
+
+
+		root = root->next_sibling();
+	}
 }
 
 

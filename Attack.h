@@ -7,19 +7,21 @@
 #include <vector>
 #include <string>
 #include "Condition.h"
+#include "rapidxml.hpp"
 
+using namespace rapidxml;
 using namespace std;
 
 #ifndef ATTACK_H_
 #define ATTACK_H_
 
 class Attack {
-private:
+public:
 	vector<Condition> conditions;
 	string print;
 	string action;
-public:
-	Attack() {}
+
+	Attack(xml_node<>*);
 	virtual ~Attack() {}
 };
 

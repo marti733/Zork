@@ -6,6 +6,8 @@
  */
 #include "Attack.h"
 
+Attack::Attack(xml_node<>*){
 
+}
 
 
