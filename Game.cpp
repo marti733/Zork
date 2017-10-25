@@ -143,7 +143,7 @@ void Game::executeCommand(string command) {
 
 }
 
-//Read in xml data structure
+//Read in xml data structure and add elements to the current room
 void Game::parseXML(xml_node<> * root){
 	while(root != nullptr){
 		if(string((root->name())) == string("room")) {
@@ -159,7 +159,8 @@ void Game::parseXML(xml_node<> * root){
 			containers[container->name] = container;
 		}
 		else if(string((root->name())) == string("creature")) {
-
+			Creature* creature = new Creature(root->first_node());
+			creatures[creature->name] = creature;
 		}
 
 		root = root->next_sibling();

@@ -5,17 +5,20 @@
  *      Author: cheyenne
  */
 #include <string>
+#include "rapidxml.hpp"
+
+using namespace rapidxml;
+using namespace std;
 
 #ifndef CREATURE_H_
 #define CREATURE_H_
 
 class Creature {
-private:
-	std::string name;
-	std::string vulnerability;
 public:
+	string name;
+	string vulnerability;
 
-	Creature() {}
+	Creature(xml_node<char>* name);
 	virtual ~Creature() {}
 };
 

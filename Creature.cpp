@@ -5,6 +5,10 @@
  *      Author: cheyenne
  */
 
+#include "Creature.h"
 
+Creature::Creature(xml_node<char>* name){
+
+}
 
 

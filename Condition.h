@@ -12,12 +12,10 @@ using namespace std;
 #define CONDITION_H_
 
 class Condition{
-private:
-	string has;
-	string owner;
-	string object;
-	string status;
 public:
+	string owner;
+	string status;
+
 	Condition() {}
 	virtual ~Condition() {}
 };
