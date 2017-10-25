@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include "Item.h"
+#include "Trigger.h"
 #include "rapidxml.hpp"
 
 using namespace rapidxml;
@@ -20,9 +21,11 @@ public:
 	string name;
 	string status;
 	string accept;
+	string description;
+	Trigger* trigger;
 	map<string, Item*> items;
 
-	Container(xml_node<char>* name);
+	Container(xml_node<>*);
 	virtual ~Container() {}
 };
 
