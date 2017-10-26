@@ -122,13 +122,13 @@ void Game::executeCommand(string command) {
 		navigateDirection("w");
 	}
 	else if (command.find("add") != string::npos){
-
+		addObject(command);
 	}
 	else if (command.find("delete") != string::npos){
-
+		deleteObject(command);
 	}
 	else if (command.find("update") != string::npos){
-
+		updateObject(command);
 	}
 	else if (command.find("game over") != string::npos){
 		std::cout << "Victory!" << std::endl;
@@ -210,6 +210,17 @@ void Game::attackCreature(string command){
 
 }
 
+void Game::addObject(string command) {
+
+}
+
+void Game::deleteObject(string command){
+
+}
+
+void Game::updateObject(string command){
+
+}
 
 
 

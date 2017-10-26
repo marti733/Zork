@@ -48,6 +48,9 @@ public:
 	void dropItem(string);
 	void turnOn(string);
 	void attackCreature(string);
+	void addObject(string);
+	void deleteObject(string);
+	void updateObject(string);
 };
 
 
