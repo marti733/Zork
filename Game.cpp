@@ -78,6 +78,9 @@ void Game::runGame(string filename) {
 	this->getSetup(filename);
 
 	string command;
+	this->location = "Entrance";
+	cout << rooms[location]->description << endl;
+
 	//Run game until exit condition or error occurs
 	while(this->status){
 		bool check = checkTriggers();
@@ -122,7 +125,9 @@ void Game::executeCommand(string command) {
 		readItem(command);
 	}
 	else if (command.find("open exit") != string::npos){
-		isExit();
+		if (isExit())
+			return;
+
 	}
 	else if (command.find("open") != string::npos){
 		openObject(command);
@@ -130,19 +135,19 @@ void Game::executeCommand(string command) {
 	else if (command.find("take") != string::npos){
 		takeItem(command);
 	}
-	else if (command.find("i") != string::npos){
+	else if (command == "i"){
 		getInventory();
 	}
-	else if (command.find("n") != string::npos){
+	else if (command == "n"){
 		navigateDirection("n");
 	}
-	else if (command.find("s") != string::npos){
+	else if (command == "s"){
 		navigateDirection("s");
 	}
-	else if (command.find("e") != string::npos){
+	else if (command == "e"){
 		navigateDirection("e");
 	}
-	else if (command.find("w") != string::npos){
+	else if (command == "w"){
 		navigateDirection("w");
 	}
 	else if (command.find("add") != string::npos){
@@ -204,7 +209,31 @@ void Game::parseXML(xml_node<> * root){
  * Parameter(s): direction command
  * Return: void */
 void Game::navigateDirection(string direction){
+	Room* c_room = rooms[this->location];
+	string d;
 
+	if(direction == "n") {
+		d = "north";
+	}
+	else if (direction == "s") {
+		d = "south";
+	}
+	else if (direction == "e") {
+		d = "east";
+	}
+	else if (direction == "w"){
+		d = "west";
+	}
+
+	map<string, Border*>::iterator it;
+
+	it = c_room->borders.find(d);
+	if(it == c_room->borders.end())
+		cout << "Can’t go that way." << endl;
+	else {
+		this->location = it->second->name;
+		cout << rooms[location]->description << endl;
+	}
 
 }
 
@@ -254,8 +283,18 @@ void Game::openObject(string command){
  *
  * Parameter(s): void
  * Return: void */
-void Game::isExit(){
+bool Game::isExit(){
+	Room * current_room = rooms[this->location];
 
+	if(current_room->type == "exit"){
+		cout << "Game Over" << endl;
+		return true;
+	}
+	else {
+		cout << "This is not an exit!" << endl;
+	}
+
+	return false;
 }
 
 /* Prints whatever is written on an object that the player has, if something is
@@ -334,7 +373,6 @@ void Game::deleteObject(string command){
 void Game::updateObject(string command){
 
 }
-
 
 
 

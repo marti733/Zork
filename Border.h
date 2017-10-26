@@ -6,7 +6,6 @@
  */
 #include <string>
 #include "rapidxml.hpp"
-
 using namespace rapidxml;
 using namespace std;
 

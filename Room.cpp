@@ -4,17 +4,24 @@
  *  Created on: Oct 16, 2017
  *      Author: cheyenne
  */
+
+#include <iostream>
 #include "Room.h"
+#include "Border.h"
+#include "Trigger.h"
+#include <map>
+using namespace std;
 
 Room::Room(xml_node<> * root){
 	string n;
 	string v;
+	Border* border;
+
+	this->type = "regular";
 
 	while(root != nullptr) {
 		n = root->name();
 		v = root->value();
-
-		this->type = "regular";
 
 		if(n == "name"){
 			this->name = v;
@@ -33,15 +40,16 @@ Room::Room(xml_node<> * root){
 			this->items[item->name] = item;
 		}
 		else if (n == "trigger"){
-			Trigger* trigger = new Trigger(root);
-			this->triggers[trigger->name] = trigger;
+			this->triggers = new Trigger(root);
 		}
 		else if (n == "border"){
-			this->border = new Border(root);
+			border = new Border(root->first_node());
+			this->borders[border->direction] = border;
 		}
 
 		root = root->next_sibling();
 	}
+
 }
 
 

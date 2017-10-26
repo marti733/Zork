@@ -25,14 +25,17 @@ public:
 	string name;
 	string type;
 	string status;
-	Border* border;
+	map<string, Border*> borders;
 	map<string, Container*> containers;
-	map<string, Trigger*> triggers;
+	Trigger* triggers;
 	map<string, Item*> items;
 	map<string, Creature*> creatures;
 
+
+
 	Room (xml_node<char>* name);
 	virtual ~Room() {}
+
 };
 
 

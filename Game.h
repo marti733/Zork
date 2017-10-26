@@ -22,11 +22,13 @@ using namespace std;
 class Game {
 private:
 	bool status;
+	string location;
 	map<string, Room*> rooms;
 	map<string, Container*> containers;
 	map<string, Creature*> creatures;
 	map<string, Item*> items;
 	map<string, string> inventory;
+
 
 public:
 	Game(int i) : status(true) {}
@@ -43,7 +45,7 @@ public:
 	void getInventory(void);
 	void takeItem(string);
 	void openObject(string);
-	void isExit();
+	bool isExit();
 	void putItem(string);
 	void readItem(string);
 	void dropItem(string);
@@ -52,6 +54,7 @@ public:
 	void addObject(string);
 	void deleteObject(string);
 	void updateObject(string);
+	void loadRoom();
 };
 
 
