@@ -5,7 +5,9 @@
  *      Author: cheyenne
  */
 #include <string>
+#include "rapidxml.hpp"
 
+using namespace rapidxml;
 using namespace std;
 
 #ifndef CONDITION_H_
@@ -16,7 +18,7 @@ public:
 	string owner;
 	string status;
 
-	Condition() {}
+	Condition(xml_node<>*);
 	virtual ~Condition() {}
 };
 
