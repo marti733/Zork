@@ -38,6 +38,16 @@ public:
 	bool checkTriggers();
 	void executeCommand(string);
 	void parseXML(xml_node<> *);
+	void navigateDirection(string);
+	void getInventory(void);
+	void takeItem(string);
+	void openObject(string);
+	void isExit();
+	void putItem(string);
+	void readItem(string);
+	void dropItem(string);
+	void turnOn(string);
+	void attackCreature(string);
 };
 
 

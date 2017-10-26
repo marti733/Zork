@@ -8,9 +8,9 @@ Game -> Room, item, container, creature
 x Room -> Description, item, trigger, border, name, creature, container, status, type
 x Item -> Name, writing, status, turnon
 x Container -> Name, item, status, accept, trigger
-Creature -> Name, vulnerability, attack, trigger
+x Creature -> Name, vulnerability, attack, trigger
 Trigger -> Command, condition, type, print
-Border -> Direction, name
+x Border -> Direction, name
 Turnon -> Print, action
 Condition -> Has, owner, object, status
 Attack -> Condition, print, action

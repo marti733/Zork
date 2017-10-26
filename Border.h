@@ -18,7 +18,7 @@ public:
 	string direction;
 	string name;
 
-	Border(xml_node<char>* name);
+	Border(xml_node<>*);
 	virtual ~Border() {}
 };
 
