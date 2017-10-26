@@ -10,6 +10,7 @@
 #include <map>
 #include <istream>
 #include <string>
+#include <sstream>
 #include "Game.h"
 #include "rapidxml.hpp"
 
@@ -103,11 +104,20 @@ bool Game::checkTriggers(){
 	return check;
 }
 
-/* If there is no trigger override, execute user input command
+/* If there is no trigger override, execute user input command. Split command into words for
+ * function calls.
  *
  * Parameter(s): user input command
  * Return: void */
 void Game::executeCommand(string command) {
+
+	stringstream strstr(command);
+
+	// use stream iterators to copy the stream to the vector as whitespace separated strings
+	istream_iterator<string> it(strstr);
+	istream_iterator<string> end;
+	vector<string> results(it, end);
+
 
 	if(command.find("attack") != string::npos) {
 		attackCreature(command);
@@ -127,7 +137,6 @@ void Game::executeCommand(string command) {
 	else if (command.find("open exit") != string::npos){
 		if (isExit())
 			return;
-
 	}
 	else if (command.find("open") != string::npos){
 		openObject(command);
@@ -162,11 +171,11 @@ void Game::executeCommand(string command) {
 	else if (command.find("game over") != string::npos){
 		std::cout << "Victory!" << std::endl;
 	}
-	//FOR TESTING REMOVE BEFORE DEMO
+/*	//FOR TESTING REMOVE BEFORE DEMO
 	else if (command.find("q") != string::npos){
 		this->status = false;
 		std::cout << "Game Over" << std::endl;
-	}
+	}*/
 	else {
 		std::cout << "That command doesn't exist." << std::endl;
 	}
@@ -249,12 +258,12 @@ void Game::getInventory(){
 	}
 	else {
 		std::cout << "Your inventory contains: ";
-		for (map<string, string>::iterator it = inventory.begin(); it != inventory.end(); it++)
+		for (map<string, Item*>::iterator it = inventory.begin(); it != inventory.end(); it++)
 		{
 			if (it == inventory.begin())
-				std::cout << it->second << std::endl;
+				std::cout << it->second->name;
 			else
-				std::cout << ", "<< it->second;
+				std::cout << ", "<< it->second->name;
 		}
 		std::cout << "." << std::endl;
 	}
@@ -266,6 +275,50 @@ void Game::getInventory(){
  * Parameter(s): command for parsing
  * Return: void */
 void Game::takeItem(string command){
+	vector<string> com = splitCommand(command);
+	if(com.size() < 2) {
+		cout << "To take an item, specify the item. For example: take item." << endl;
+	}
+	Room * c_room = rooms.find(location)->second;
+	string item = com[1];
+
+	//Check if item is already in inventory
+	if(inventory.find(item) != inventory.end()){
+		cout << "The " << item << " is already in your inventory." << endl;
+	}
+	else{
+		// Check if item is in the game
+		if (items.find(item) != items.end()){
+			inventory[item] = items[item];
+			items.erase(item);
+			cout << "The " <<  item << " was taken from the room and is in your inventory." << endl;
+		}
+		else{
+			//Check if item is in the current room
+			if(c_room->items.find(item) != c_room->items.end()) {
+				inventory[item] = c_room->items[item];
+				c_room->items.erase(item);
+				cout << "The " <<  item << " was taken from " << c_room->name << " and added to inventory." <<endl;
+			}
+			else {
+				//Check open containers
+				for(map<string,Container*>::iterator it = c_room->containers.begin(); it!= c_room->containers.end(); it++) {
+					Container * c_container = it->second;
+					if(c_container->status == "open") {
+						//Find item in open container
+						if(c_container->items.find(item) != c_container->items.end()) {
+							inventory[item] = c_container->items[item];
+							c_container->items.erase(item);
+							cout << "The " <<  item << " was taken from " << c_container->name << " and put in your inventory." << endl;
+						}
+					}
+				}
+
+				cout << "The " <<  item << " does not exist, try opening a container." << endl;
+			}
+		}
+	}
+
 
 }
 
@@ -276,13 +329,14 @@ void Game::takeItem(string command){
  * Parameter(s): command for parsing
  * Return: void */
 void Game::openObject(string command){
+	vector<string> com = splitCommand(command);
 
 }
 
 /* If the room is of type exit prints “Game Over” and gracefully ends the program.
  *
  * Parameter(s): void
- * Return: void */
+ * Return: If exit is found */
 bool Game::isExit(){
 	Room * current_room = rooms[this->location];
 
@@ -305,6 +359,7 @@ bool Game::isExit(){
  * Parameter(s): command for parsing
  * Return: void */
 void Game::readItem(string command) {
+	vector<string> com = splitCommand(command);
 
 }
 
@@ -315,7 +370,7 @@ void Game::readItem(string command) {
  * Parameter(s): command for grabbing item name
  * Return: void */
 void Game::dropItem(string command){
-
+	vector<string> com = splitCommand(command);
 }
 
 /* Adds the item to the containers inventory and and prints “Item (item) added to (container).”
@@ -325,7 +380,7 @@ void Game::dropItem(string command){
  * Parameter(s): command for parsing
  * Return: void */
 void Game::putItem(string command){
-
+	vector<string> com = splitCommand(command);
 }
 
 /* Activates an item if it is in the player’s inventory printing “You activate the (item).” and
@@ -335,7 +390,7 @@ void Game::putItem(string command){
  * Parameter(s): command for parsing
  * Return: void */
 void Game::turnOn(string command){
-
+	vector<string> com = splitCommand(command);
 }
 
 /* Prints “You assault the (creature) with the (item).” and executes “attack” elements if item
@@ -345,7 +400,7 @@ void Game::turnOn(string command){
  * Parameter(s): command for parsing
  * Return: void */
 void Game::attackCreature(string command){
-
+	vector<string> com = splitCommand(command);
 }
 
 /* Creates instance of object with a specific owner (does not work on the player's inventory).
@@ -353,7 +408,7 @@ void Game::attackCreature(string command){
  * Parameter(s): command for parsing
  * Return: void */
 void Game::addObject(string command) {
-
+	vector<string> com = splitCommand(command);
 }
 
 /* Removes object references from game, but the item can still be brought back into the game
@@ -363,7 +418,7 @@ void Game::addObject(string command) {
  * Parameter(s): command for parsing
  * Return: void */
 void Game::deleteObject(string command){
-
+	vector<string> com = splitCommand(command);
 }
 
 /* Creates new status for object that can be checked by triggers
@@ -371,11 +426,21 @@ void Game::deleteObject(string command){
  * Parameter(s): command for parsing
  * Return: void */
 void Game::updateObject(string command){
-
+	vector<string> com = splitCommand(command);
 }
 
+/* Creates a vector of words from user input command
+ *
+ * Parameter(s): Command to be parsed
+ * Return: Vector of words */
+vector<string> Game::splitCommand(string command){
+	string buffer;
+	stringstream ss(command);
 
+	vector<string> words;
 
+	while (ss >> buffer)
+		words.push_back(buffer);
 
-
-
+	return words;
+}

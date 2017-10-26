@@ -9,6 +9,8 @@
 #include "Room.h"
 #include "Border.h"
 #include "Trigger.h"
+#include "Creature.h"
+#include "Container.h"
 #include <map>
 using namespace std;
 
@@ -45,6 +47,14 @@ Room::Room(xml_node<> * root){
 		else if (n == "border"){
 			border = new Border(root->first_node());
 			this->borders[border->direction] = border;
+		}
+		else if (n == "creature"){
+			Creature* creature = new Creature(root->first_node());
+			this->creatures[creature->name] = creature;
+		}
+		else if (n == "container") {
+			Container* container = new Container(root->first_node());
+			this->containers[container->name] = container;
 		}
 
 		root = root->next_sibling();

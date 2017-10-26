@@ -27,7 +27,7 @@ private:
 	map<string, Container*> containers;
 	map<string, Creature*> creatures;
 	map<string, Item*> items;
-	map<string, string> inventory;
+	map<string, Item*> inventory;
 
 
 public:
@@ -45,7 +45,6 @@ public:
 	void getInventory(void);
 	void takeItem(string);
 	void openObject(string);
-	bool isExit();
 	void putItem(string);
 	void readItem(string);
 	void dropItem(string);
@@ -55,6 +54,8 @@ public:
 	void deleteObject(string);
 	void updateObject(string);
 	void loadRoom();
+	bool isExit();
+	vector<string> splitCommand(string);
 };
 
 

@@ -25,6 +25,7 @@ self preservation that you're going to go exploring north into it.  It's a littl
       <description>A huge cavern surrounds you with a locked door to the north, a chest in the center, and a very dark corner...</description>
       <container>chest</container>
       <container>lock</container>
+      <item>phone</item>
       <creature>gnome</creature>
       <border>
          <direction>south</direction>

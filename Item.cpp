@@ -5,7 +5,9 @@
  *      Author: cheyenne
  */
 
+#include <iostream>
 #include "Item.h"
+using namespace std;
 
 Item::Item(xml_node<>* root){
 	string n;
@@ -29,6 +31,12 @@ Item::Item(xml_node<>* root){
 		}
 		else if (n == "trigger"){
 			this->trigger = new Trigger(root);
+		}
+		else if (n == "writing") {
+			this->writing = v;
+		}
+		else if (n == "item"){
+			this->name = v;
 		}
 
 		root = root->next_sibling();
