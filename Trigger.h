@@ -6,6 +6,7 @@
  */
 #include <string>
 #include <map>
+#include <vector>
 #include "Condition.h"
 #include "rapidxml.hpp"
 
@@ -23,6 +24,7 @@ public:
 	string type;
 	string print;
 	string name;
+	vector<string> action;
 
 	Trigger(xml_node<char>* name);
 	virtual ~Trigger() {}

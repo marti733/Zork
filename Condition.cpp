@@ -20,6 +20,9 @@ Condition::Condition(xml_node<>* root){
 		else if (n == "status"){
 			this->status = v;
 		}
+		else if(n == "has"){
+			this->has = v;
+		}
 	}
 }
 

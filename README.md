@@ -12,8 +12,8 @@ x Creature -> Name, vulnerability, attack, trigger
 Trigger -> Command, condition, type, print
 x Border -> Direction, name
 Turnon -> Print, action
-Condition -> Has, owner, object, status
-Attack -> Condition, print, action
+x Condition -> Has, owner, object, status
+x Attack -> Condition, print, action
 
 
 Strings :

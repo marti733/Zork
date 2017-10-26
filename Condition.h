@@ -17,6 +17,8 @@ class Condition{
 public:
 	string owner;
 	string status;
+	string object;
+	string has;
 
 	Condition(xml_node<>*);
 	virtual ~Condition() {}

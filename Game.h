@@ -26,6 +26,7 @@ private:
 	map<string, Container*> containers;
 	map<string, Creature*> creatures;
 	map<string, Item*> items;
+	map<string, string> inventory;
 
 public:
 	Game(int i) : status(true) {}

@@ -14,6 +14,8 @@ Room::Room(xml_node<> * root){
 		n = root->name();
 		v = root->value();
 
+		this->type = "regular";
+
 		if(n == "name"){
 			this->name = v;
 		}
