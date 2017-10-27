@@ -25,8 +25,8 @@ bool Game::getStatus() {
 		return status;
 }
 
-/* Sets/ updates the status of the game
- *
+/*
+ * Sets / updates the status of the game
  * Parameter(s): Status value to set
  * Return: void */
 void Game::setStatus(bool n) {
@@ -171,11 +171,11 @@ void Game::executeCommand(string command) {
 	else if (command.find("game over") != string::npos){
 		std::cout << "Victory!" << std::endl;
 	}
-/*	//FOR TESTING REMOVE BEFORE DEMO
+	//FOR TESTING REMOVE BEFORE DEMO
 	else if (command.find("q") != string::npos){
 		this->status = false;
 		std::cout << "Game Over" << std::endl;
-	}*/
+	}
 	else {
 		std::cout << "That command doesn't exist." << std::endl;
 	}
@@ -277,7 +277,8 @@ void Game::getInventory(){
 void Game::takeItem(string command){
 	vector<string> com = splitCommand(command);
 	if(com.size() < 2) {
-		cout << "To take an item, specify the item. For example: take item." << endl;
+		cout << "To take an item, the command must be in the form of 'take (item)'." << endl;
+		return;
 	}
 	Room * c_room = rooms.find(location)->second;
 	string item = com[1];
@@ -315,6 +316,54 @@ void Game::takeItem(string command){
 				}
 
 				cout << "The " <<  item << " does not exist, try opening a container." << endl;
+			}
+		}
+	}
+}
+
+/* Adds the item to the containers inventory and and prints “Item (item) added to (container).”
+ * If the object is not in the players inventory indicate that by printing an appropriate
+ * message.
+ *
+ * Parameter(s): command for parsing
+ * Return: void */
+void Game::putItem(string command){
+	vector<string> com = splitCommand(command);
+	if(com.size() < 4) {
+		cout << "Error: put command must be in the format of 'put (item) in (container).'" << endl;
+		return;
+	}
+	string item = com[1];
+	string container = com[3];
+
+	if(inventory.find(item) == inventory.end()){
+		cout << "The " << item << " is not in your inventory" << endl;
+	}
+	else{
+		if (containers.find(container) == containers.end()){
+			if(rooms[location]->containers.find(container) == rooms[location]->containers.end()){
+				cout << "The " << container << " does not exist here." << endl;
+				return;
+			}
+			else {
+				if (rooms[location]->containers[container]->status == "open") {
+					rooms[location]->containers[container]->items[item] = inventory[item];
+					inventory.erase(item);
+					cout << "The " << item << " was put in the " << container << endl;
+				}
+				else {
+					cout << "The " << container << " is not open" << endl;
+				}
+			}
+		}
+		else {
+			if (containers[container]->status == "open") {
+				containers[container]->items[item] = inventory[item];
+				inventory.erase(item);
+				cout << "The " << item << " was put in the " << container << endl;
+			}
+			else {
+				cout << "The " << container << " is not open" << endl;
 			}
 		}
 	}
@@ -360,6 +409,21 @@ bool Game::isExit(){
  * Return: void */
 void Game::readItem(string command) {
 	vector<string> com = splitCommand(command);
+	if(com.size() < 2) {
+		cout << "Error! The read command should have the following format: 'read (item)'" << endl;
+		return;
+	}
+	string item = com[1];
+
+	if(inventory.find(item) != inventory.end()) {
+		if(inventory[item]->writing != "")
+			cout << inventory[item]->writing << endl;
+		else
+			cout << "The " << item << " does not have anything written on it." << endl;
+	}
+	else {
+		cout << "The " << item << " is not in your inventory." << endl;
+	}
 
 }
 
@@ -371,19 +435,25 @@ void Game::readItem(string command) {
  * Return: void */
 void Game::dropItem(string command){
 	vector<string> com = splitCommand(command);
+	Room* c_room = rooms[location];
+	if (com.size() < 2) {
+		cout << "Error! The drop function command must have the following format: 'drop (item)'" << endl;
+		return;
+	}
+
+	string item = com[1];
+	if (inventory.find(item) != inventory.end()){
+		c_room->items[item] = inventory[item];
+		inventory.erase(item);
+		cout << item << " dropped" << endl;
+	}
+	else {
+		cout << "The " << item << " is not in your inventory." << endl;
+	}
+
 }
 
-/* Adds the item to the containers inventory and and prints “Item (item) added to (container).”
- * If the object is not in the players inventory indicate that by printing an appropriate
- * message.
- *
- * Parameter(s): command for parsing
- * Return: void */
-void Game::putItem(string command){
-	vector<string> com = splitCommand(command);
-}
-
-/* Activates an item if it is in the player’s inventory printing “You activate the (item).” and
+/* Activates an item if it is in the player’s inventory printing “You activated the (item).” and
  * executing commands in the “turnon” element. If the object is not in the players inventory
  * indicate that by printing an appropriate message.
  *

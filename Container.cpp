@@ -15,6 +15,8 @@ Container::Container(xml_node<>* root){
 		n = root->name();
 		v = root->value();
 
+		this->status = "open";
+
 		if(n == "name"){
 			this->name = v;
 		}
