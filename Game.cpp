@@ -571,6 +571,83 @@ void Game::deleteObject(string command){
  * Return: void */
 void Game::updateObject(string command){
 	vector<string> com = splitCommand(command);
+
+	string object = com[1];
+	string stat = com[3];
+
+	//Look for items in game
+	if(items.find(object) != items.end()){
+		items[object]->status = stat;
+		return;
+	}
+
+	//Look for rooms in game
+	if(rooms.find(object) != rooms.end()){
+		rooms[object]->status = stat;
+		return;
+	}
+
+	//Look for containers in game
+	if(containers.find(object) != containers.end()){
+		containers[object]->status = stat;
+		return;
+	}
+
+	//Look for creatures in game
+	if(creatures.find(object) != creatures.end()) {
+		creatures[object]->status = stat;
+		return;
+	}
+
+	//Look for item in inventory
+	if(inventory.find(object) != inventory.end()) {
+		inventory[object]->status = stat;
+		return;
+	}
+
+
+	//Look for item in containers in game
+	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
+		if (it->second->items.find(object) != it->second->items.end()){
+			it->second->items[object]->status = stat;
+			return;
+		}
+	}
+
+	//Look for item in rooms and items in containers in rooms
+	for (map<string, Room*>::iterator it = rooms.begin(); it != rooms.end(); it++)
+	{
+		//Look for items in room
+		if(it->second->items.find(object) != it->second->items.end()){
+			it->second->items[object]->status = stat;
+			return;
+		}
+
+		//Look for creature in rooms
+		if(it->second->creatures.find(object) != it->second->creatures.end()){
+			it->second->creatures[object]->status = stat;
+			return;
+		}
+
+		//Look for container in rooms
+		if(it->second->containers.find(object) != it->second->containers.end()){
+			it->second->containers[object]->status = stat;
+			return;
+		}
+
+
+		//Look for item in containers in room
+		for (map<string, Container*>::iterator iter = it->second->containers.begin(); iter != it->second->containers.end(); iter++){
+			if (iter->second->items.find(object) != iter->second->items.end()){
+				iter->second->items[object]->status = stat;
+				return;
+			}
+		}
+
+	}
+
+	cout << "Error: object not found. No update made." << endl;
+
 }
 
 /* Creates a vector of words from user input command
