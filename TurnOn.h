@@ -14,10 +14,10 @@ using namespace std;
 #define TURNON_H_
 
 class TurnOn {
-private:
+public:
 	string print;
 	string action;
-public:
+
 	TurnOn(xml_node<>* root);
 	virtual ~TurnOn() {}
 };

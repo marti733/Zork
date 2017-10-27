@@ -172,9 +172,15 @@ void Game::executeCommand(string command) {
 		std::cout << "Victory!" << std::endl;
 	}
 	//FOR TESTING REMOVE BEFORE DEMO
-	else if (command.find("q") != string::npos){
-		this->status = false;
-		std::cout << "Game Over" << std::endl;
+	else if (command.find("q") != string::npos || command.find("quit") != string::npos){
+		string response;
+		std::cout << "Are you sure you want to quit?" << endl << ">";
+		getline(cin, response);
+
+		if(response == "y" || response == "Y" || response == "yes"){
+			this->status = false;
+			cout << "Goodbye" << endl;
+		}
 	}
 	else {
 		std::cout << "That command doesn't exist." << std::endl;
@@ -379,6 +385,36 @@ void Game::putItem(string command){
  * Return: void */
 void Game::openObject(string command){
 	vector<string> com = splitCommand(command);
+	Room * c_room = rooms[location];
+	if(com.size() < 2) {
+		cout << "To open a container, the command must be in the form of 'open (container)'." << endl;
+		return;
+	}
+
+	string cont = com[1];
+	if(containers.find(cont) != containers.end()){
+		if(containers[cont]->status == "locked"){
+			cout << cont << " is locked." << endl;
+		}
+		else {
+			containers[cont]->status = "open";
+			cout << "The " << cont << " has been opened." << endl;
+		}
+	}
+	else if (c_room->containers.find(cont) != c_room->containers.end()){
+		if (c_room->containers[cont]->status == "locked"){
+			cout << cont << " is locked." << endl;
+		}
+		else {
+			c_room->containers[cont]->status = "open";
+			cout << "The " << cont << " has been opened." << endl;
+		}
+	}
+	else {
+		cout << cont << " does not exist." << endl;
+	}
+
+
 
 }
 
@@ -461,6 +497,24 @@ void Game::dropItem(string command){
  * Return: void */
 void Game::turnOn(string command){
 	vector<string> com = splitCommand(command);
+	if (com.size() < 3) {
+		cout << "Error! The turn on function command must have the following format: 'turn on (item)'" << endl;
+	}
+
+	string item = com[2];
+	if(inventory.find(item) == inventory.end()){
+		cout << "The " << item << " is not in your inventory." << endl;
+		return;
+	}
+
+	if (inventory[item]->turnon == nullptr){
+		cout << "The " << item << " cannot be turned on." << endl;
+		return;
+	}
+
+	cout << inventory[item]->turnon->print << endl;
+	executeCommand(inventory[item]->turnon->action);
+
 }
 
 /* Prints “You assault the (creature) with the (item).” and executes “attack” elements if item
