@@ -27,7 +27,7 @@ Item::Item(xml_node<>* root){
 			this->status = v;
 		}
 		else if(n == "turnon"){
-			this->turnon = new TurnOn(root);
+			this->turnon = new TurnOn(root->first_node());
 		}
 		else if (n == "trigger"){
 			this->trigger = new Trigger(root);

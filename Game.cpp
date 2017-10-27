@@ -159,16 +159,16 @@ void Game::executeCommand(string command) {
 	else if (command == "w"){
 		navigateDirection("w");
 	}
-	else if (command.find("add") != string::npos){
+	else if (command.find("Add") != string::npos){
 		addObject(command);
 	}
-	else if (command.find("delete") != string::npos){
+	else if (command.find("Delete") != string::npos){
 		deleteObject(command);
 	}
-	else if (command.find("update") != string::npos){
+	else if (command.find("Update") != string::npos){
 		updateObject(command);
 	}
-	else if (command.find("game over") != string::npos){
+	else if (command.find("Game Over") != string::npos){
 		std::cout << "Victory!" << std::endl;
 	}
 	//FOR TESTING REMOVE BEFORE DEMO
@@ -512,8 +512,10 @@ void Game::turnOn(string command){
 		return;
 	}
 
+	cout << "You turned on the " << item << endl;
 	cout << inventory[item]->turnon->print << endl;
 	executeCommand(inventory[item]->turnon->action);
+
 
 }
 
