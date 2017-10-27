@@ -19,6 +19,14 @@ self preservation that you're going to go exploring north into it.  It's a littl
          <direction>north</direction>
          <name>MainCavern</name>
       </border>
+      <container>
+         <name>drawer</name>
+         <status>closed</status>
+         <item>sock</item>
+         <item>wand</item>
+         <item>owl</item>
+         <item>piece of glass</item>
+      </container>
    </room>
    <room>
       <name>MainCavern</name>

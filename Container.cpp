@@ -6,16 +6,19 @@
  */
 
 #include "Container.h"
+#include <iostream>
+
+using namespace std;
 
 Container::Container(xml_node<>* root){
 	string n;
 	string v;
 
+	this->status = "open";
+
 	while(root != nullptr) {
 		n = root->name();
 		v = root->value();
-
-		this->status = "open";
 
 		if(n == "name"){
 			this->name = v;

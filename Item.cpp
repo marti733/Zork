@@ -37,6 +37,7 @@ Item::Item(xml_node<>* root){
 		}
 		else if (n == "item"){
 			this->name = v;
+			return;
 		}
 
 		root = root->next_sibling();

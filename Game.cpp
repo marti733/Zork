@@ -260,18 +260,18 @@ void Game::navigateDirection(string direction){
  * Return: void */
 void Game::getInventory(){
 	if(inventory.empty()){
-		std::cout << "Inventory: empty" << std::endl;
+		cout << "Inventory: empty" << std::endl;
 	}
 	else {
-		std::cout << "Your inventory contains: ";
+		cout << "Your inventory contains: ";
 		for (map<string, Item*>::iterator it = inventory.begin(); it != inventory.end(); it++)
 		{
 			if (it == inventory.begin())
-				std::cout << it->second->name;
+				cout << it->second->name;
 			else
-				std::cout << ", "<< it->second->name;
+				cout << ", "<< it->second->name;
 		}
-		std::cout << "." << std::endl;
+		cout << "." << std::endl;
 	}
 }
 
@@ -381,7 +381,7 @@ void Game::putItem(string command){
  * and makes those items available to pick up. If empty, you should output "(container)
  * is empty."
  *
- * Parameter(s): command for parsing
+ * Parameter(s): container to open
  * Return: void */
 void Game::openObject(string command){
 	vector<string> com = splitCommand(command);
@@ -398,7 +398,15 @@ void Game::openObject(string command){
 		}
 		else {
 			containers[cont]->status = "open";
-			cout << "The " << cont << " has been opened." << endl;
+			cout << cont << " contains: ";
+			for (map<string, Item*>::iterator it = containers[cont]->items.begin(); it != containers[cont]->items.end(); it++)
+			{
+				if (it == containers[cont]->items.begin())
+					cout << it->second->name;
+				else
+					cout << ", "<< it->second->name;
+			}
+			cout << "." << std::endl;
 		}
 	}
 	else if (c_room->containers.find(cont) != c_room->containers.end()){
@@ -407,11 +415,19 @@ void Game::openObject(string command){
 		}
 		else {
 			c_room->containers[cont]->status = "open";
-			cout << "The " << cont << " has been opened." << endl;
+			cout << cont << " contains: ";
+			for (map<string, Item*>::iterator it = c_room->containers[cont]->items.begin(); it != c_room->containers[cont]->items.end(); it++)
+			{
+				if (it == c_room->containers[cont]->items.begin())
+					cout << it->second->name;
+				else
+					cout << ", "<< it->second->name;
+			}
+			cout << "." << std::endl;
 		}
 	}
 	else {
-		cout << cont << " does not exist." << endl;
+		cout << cont << " does not exist or it is not a container." << endl;
 	}
 
 
@@ -441,7 +457,7 @@ bool Game::isExit(){
  * object. If the object is not in the players inventory indicate that by printing an
  * appropriate message
  *
- * Parameter(s): command for parsing
+ * Parameter(s): item to read
  * Return: void */
 void Game::readItem(string command) {
 	vector<string> com = splitCommand(command);
@@ -467,7 +483,7 @@ void Game::readItem(string command) {
  * If the object is not in the players inventory indicate that by printing an appropriate
  * message.
  *
- * Parameter(s): command for grabbing item name
+ * Parameter(s): item to drop
  * Return: void */
 void Game::dropItem(string command){
 	vector<string> com = splitCommand(command);
@@ -493,7 +509,7 @@ void Game::dropItem(string command){
  * executing commands in the “turnon” element. If the object is not in the players inventory
  * indicate that by printing an appropriate message.
  *
- * Parameter(s): command for parsing
+ * Parameter(s): item to turn on
  * Return: void */
 void Game::turnOn(string command){
 	vector<string> com = splitCommand(command);
@@ -514,8 +530,10 @@ void Game::turnOn(string command){
 
 	cout << "You turned on the " << item << endl;
 	cout << inventory[item]->turnon->print << endl;
+	if (inventory[item]->turnon->action == ""){
+		return;
+	}
 	executeCommand(inventory[item]->turnon->action);
-
 
 }
 
@@ -523,7 +541,7 @@ void Game::turnOn(string command){
  * matches creature’s “vulnerability” and existing conditions are met. If the object is not in
  * the players inventory indicate that by printing an appropriate message.
  *
- * Parameter(s): command for parsing
+ * Parameter(s): creature and item
  * Return: void */
 void Game::attackCreature(string command){
 	vector<string> com = splitCommand(command);
