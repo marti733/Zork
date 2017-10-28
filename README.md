@@ -37,3 +37,4 @@ Assumptions:
 1. If the turn on has no action just return without updating the item
 2. If you want to quit without being at an exit type quit or q
 3. For errors in user input just inform of incorrect input
+4. Conditions will only be items in containers. i.e. key is in lock or door is open

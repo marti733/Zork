@@ -25,7 +25,7 @@ Creature::Creature(xml_node<>* root){
 			this->status = v;
 		}
 		else if (n == "vulnerability"){
-			this->vulnerability = v;
+			this->vulnerability[v] = v;
 		}
 		else if (n == "attack"){
 			this->attack = new Attack(root);

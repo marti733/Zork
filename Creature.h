@@ -21,7 +21,7 @@ public:
 	string status;
 	string description;
 	Attack* attack;
-	string vulnerability;
+	map<string, string> vulnerability;
 	Trigger* trigger;
 
 	Creature(xml_node<>*);

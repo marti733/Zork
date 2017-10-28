@@ -10,6 +10,9 @@ Condition::Condition(xml_node<>* root){
 	string n;
 	string v;
 
+	this->has = "yes";
+
+
 	while(root != nullptr) {
 		n = root->name();
 		v = root->value();
@@ -22,6 +25,9 @@ Condition::Condition(xml_node<>* root){
 		}
 		else if(n == "has"){
 			this->has = v;
+		}
+		else if(n == "object"){
+			this->object = v;
 		}
 	}
 }

@@ -14,7 +14,7 @@ Attack::Attack(xml_node<>* root){
 		this->print = v;
 	}
 	else if (n == "action"){
-		this->action = v;
+		this->actions.push_back(v);
 	}
 	else if(n == "condition"){
 		this->condition = new Condition(root->first_node());

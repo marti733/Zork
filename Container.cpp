@@ -30,7 +30,7 @@ Container::Container(xml_node<>* root){
 			this->status = v;
 		}
 		else if (n == "accept"){
-			this->accept = v;
+			this->accept.push_back(v);
 		}
 		else if (n == "item"){
 			Item* item = new Item(root);

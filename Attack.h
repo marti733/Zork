@@ -5,7 +5,7 @@
  *      Author: cheyenne
  */
 #include <vector>
-#include <string>
+#include <map>
 #include "Condition.h"
 #include "rapidxml.hpp"
 
@@ -19,7 +19,7 @@ class Attack {
 public:
 	Condition* condition;
 	string print;
-	string action;
+	vector<string> actions;
 
 	Attack(xml_node<>*);
 	virtual ~Attack() {}

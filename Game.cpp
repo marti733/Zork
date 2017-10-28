@@ -546,6 +546,48 @@ void Game::turnOn(string command){
  * Return: void */
 void Game::attackCreature(string command){
 	vector<string> com = splitCommand(command);
+
+	if(com.size() < 4){
+		cout << "Error! Attack command should be in the format: 'attack (creature) with (item)'" << endl;
+		return;
+	}
+
+	string creature = com[1];
+	string item = com[3];
+
+	if(inventory.find(item) == inventory.end()){
+		cout << "The " << item << " is not in your inventory" << endl;
+		return;
+	}
+
+	//Creature is in game
+	if(creatures.find(creature) != creatures.end()){
+		//Find vulnerability
+		if(creatures[creature]->vulnerability.find(item) != creatures[creature]->vulnerability.end()) {
+			cout << "You assault " << creature << " with " << item << "." << endl;
+			bool result = checkConditions(creatures[creature]->attack);
+
+			//Conditions met
+			if (result) {
+				for (int i = 0;  i < creatures[creature]->attack->actions.size(); i++){
+					executeCommand(creatures[creature]->attack->actions[i]);
+				}
+			}
+			else{
+				cout << "The conditions for attack haven't been met" << endl;
+			}
+		}
+		else
+			cout << "The attack failed because " << creature << " is not affected by " << item << endl;
+	}
+
+	//Creature is in room
+	else if(rooms[location]->creatures.find(creature) != rooms[location]->creatures.end()){
+
+	}
+	else {
+		cout << "The " << creature << " is not here" << endl;
+	}
 }
 
 /* Creates instance of object with a specific owner (does not work on the player's inventory).
@@ -826,4 +868,31 @@ vector<string> Game::splitCommand(string command){
 		words.push_back(buffer);
 
 	return words;
+}
+
+bool Game::checkConditions(Attack * attack){
+	Condition* condition = attack->condition;
+	if (condition == nullptr)
+		return true;
+
+	//Check has
+	if(condition->has == "yes") {
+		// Check if owner exists or is inventory
+		if((condition->owner == "" )|| (condition->owner == "inventory")) {
+			//Check for item in inventory
+			if(inventory.find(condition->object) != inventory.end()){
+				if(inventory[condition->object]->status == condition->status)
+					return true; //status of object matches
+			}
+		}
+		else{
+
+		}
+
+	}
+	else {
+
+	}
+
+	return false;
 }

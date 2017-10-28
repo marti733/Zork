@@ -6,6 +6,7 @@
  */
 #include <string>
 #include <map>
+#include <vector>
 #include "Item.h"
 #include "Trigger.h"
 #include "rapidxml.hpp"
@@ -20,7 +21,7 @@ class Container{
 public:
 	string name;
 	string status;
-	string accept;
+	vector<string> accept;
 	string description;
 	Trigger* trigger;
 	map<string, Item*> items;
