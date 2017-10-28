@@ -317,6 +317,7 @@ void Game::takeItem(string command){
 							inventory[item] = c_container->items[item];
 							c_container->items.erase(item);
 							cout << "The " <<  item << " was taken from " << c_container->name << " and put in your inventory." << endl;
+							return;
 						}
 					}
 				}
@@ -553,6 +554,114 @@ void Game::attackCreature(string command){
  * Return: void */
 void Game::addObject(string command) {
 	vector<string> com = splitCommand(command);
+	Item * itemO = nullptr;
+	Container* containerO = nullptr;
+	Creature* creatureO = nullptr;
+
+	Room * roomL = nullptr;
+	Container* containerL = nullptr;
+
+
+	string object = com[1];
+	string loc = com[3];
+
+	//Look for object as item in game
+	if(items.find(object) != items.end()){
+		itemO = items[object];
+	}
+
+	//Look for location as room in game
+	if(rooms.find(loc) != rooms.end()){
+		roomL = rooms[loc];
+	}
+
+	//Look for object and location as containers in game
+	if(containers.find(object) != containers.end()){
+		containerO = containers[object];
+
+	}
+	if(containers.find(loc) != containers.end()){
+		containerL = containers[loc];
+
+	}
+
+	//Look for object as creature in game
+	if(creatures.find(object) != creatures.end()) {
+		creatureO = creatures[object];
+	}
+
+	//Look for item in inventory
+	if(inventory.find(object) != inventory.end()) {
+		itemO = items[object];
+	}
+
+	//Look for item in containers in game
+	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
+		if (it->second->items.find(object) != it->second->items.end()){
+			itemO = it->second->items[object];
+		}
+	}
+	//Look for item in rooms and items in containers in rooms
+	for (map<string, Room*>::iterator it = rooms.begin(); it != rooms.end(); it++)
+	{
+		//Look for items in room
+		if(it->second->items.find(object) != it->second->items.end()){
+			itemO = it->second->items[object];
+		}
+
+		//Look for creature in rooms
+		if(it->second->creatures.find(object) != it->second->creatures.end()){
+			creatureO = it->second->creatures[object];
+		}
+
+		//Look for object and location as container in rooms
+		if(it->second->containers.find(object) != it->second->containers.end()){
+			containerO = it->second->containers[object];
+		}
+		if(it->second->containers.find(loc) != it->second->containers.end()){
+			containerO = it->second->containers[loc];
+		}
+
+		//Look for object as an item in containers in room
+		for (map<string, Container*>::iterator iter = it->second->containers.begin(); iter != it->second->containers.end(); iter++){
+			if (iter->second->items.find(object) != iter->second->items.end()){
+				itemO = iter->second->items[object];
+			}
+		}
+	}
+
+	//Location is a room
+	if(roomL != nullptr){
+		//Object is item add item to room
+		if(itemO != nullptr)
+			roomL->items[itemO->name] = itemO;
+
+		//Object is container add container to room
+		else if(containerO != nullptr) {
+			roomL->containers[containerO->name] = containerO;
+		}
+
+		//Object is creature add creature to room
+		else if(creatureO != nullptr)
+			roomL->creatures[creatureO->name] = creatureO;
+
+		else
+			cout << "Error: no " << object << " could be found " << endl;
+	}
+
+	//Location is container
+	else if(containerL != nullptr){
+		//Object is item add item to room
+		if(itemO != nullptr)
+			containerL->items[itemO->name] = itemO;
+		else {
+			cout << "Error: no " << object << " could be found" << endl;
+		}
+	}
+
+	else {
+		cout << "Error: location must be a room or container" << endl;
+	}
 }
 
 /* Removes object references from game, but the item can still be brought back into the game
@@ -563,6 +672,72 @@ void Game::addObject(string command) {
  * Return: void */
 void Game::deleteObject(string command){
 	vector<string> com = splitCommand(command);
+
+	string object = com[1];
+
+	//Look for items in game
+	if(items.find(object) != items.end()){
+		items.erase(object);
+		return;
+	}
+	//Look for rooms in game
+	if(rooms.find(object) != rooms.end()){
+		rooms.erase(object);
+		return;
+	}
+	//Look for containers in game
+	if(containers.find(object) != containers.end()){
+		containers.erase(object);
+		return;
+	}
+	//Look for creatures in game
+	if(creatures.find(object) != creatures.end()) {
+		creatures.erase(object);
+		return;
+	}
+	//Look for item in inventory
+	if(inventory.find(object) != inventory.end()) {
+		inventory.erase(object);
+		return;
+	}
+	//Look for item in containers in game
+	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
+		if (it->second->items.find(object) != it->second->items.end()){
+			it->second->items.erase(object);
+			return;
+		}
+	}
+	//Look for item in rooms and items in containers in rooms
+	for (map<string, Room*>::iterator it = rooms.begin(); it != rooms.end(); it++)
+	{
+		//Look for items in room
+		if(it->second->items.find(object) != it->second->items.end()){
+			it->second->items.erase(object);
+			return;
+		}
+
+		//Look for creature in rooms
+		if(it->second->creatures.find(object) != it->second->creatures.end()){
+			it->second->creatures.erase(object);
+			return;
+		}
+
+		//Look for container in rooms
+		if(it->second->containers.find(object) != it->second->containers.end()){
+			it->second->containers.erase(object);
+			return;
+		}
+
+
+		//Look for item in containers in room
+		for (map<string, Container*>::iterator iter = it->second->containers.begin(); iter != it->second->containers.end(); iter++){
+			if (iter->second->items.find(object) != iter->second->items.end()){
+				iter->second->items.erase(object);
+				return;
+			}
+		}
+	}
+	cout << "Error: object not found. Could not delete." << endl;
 }
 
 /* Creates new status for object that can be checked by triggers
@@ -580,32 +755,26 @@ void Game::updateObject(string command){
 		items[object]->status = stat;
 		return;
 	}
-
 	//Look for rooms in game
 	if(rooms.find(object) != rooms.end()){
 		rooms[object]->status = stat;
 		return;
 	}
-
 	//Look for containers in game
 	if(containers.find(object) != containers.end()){
 		containers[object]->status = stat;
 		return;
 	}
-
 	//Look for creatures in game
 	if(creatures.find(object) != creatures.end()) {
 		creatures[object]->status = stat;
 		return;
 	}
-
 	//Look for item in inventory
 	if(inventory.find(object) != inventory.end()) {
 		inventory[object]->status = stat;
 		return;
 	}
-
-
 	//Look for item in containers in game
 	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
 		if (it->second->items.find(object) != it->second->items.end()){
@@ -613,7 +782,6 @@ void Game::updateObject(string command){
 			return;
 		}
 	}
-
 	//Look for item in rooms and items in containers in rooms
 	for (map<string, Room*>::iterator it = rooms.begin(); it != rooms.end(); it++)
 	{
@@ -622,20 +790,16 @@ void Game::updateObject(string command){
 			it->second->items[object]->status = stat;
 			return;
 		}
-
 		//Look for creature in rooms
 		if(it->second->creatures.find(object) != it->second->creatures.end()){
 			it->second->creatures[object]->status = stat;
 			return;
 		}
-
 		//Look for container in rooms
 		if(it->second->containers.find(object) != it->second->containers.end()){
 			it->second->containers[object]->status = stat;
 			return;
 		}
-
-
 		//Look for item in containers in room
 		for (map<string, Container*>::iterator iter = it->second->containers.begin(); iter != it->second->containers.end(); iter++){
 			if (iter->second->items.find(object) != iter->second->items.end()){
@@ -643,9 +807,7 @@ void Game::updateObject(string command){
 				return;
 			}
 		}
-
 	}
-
 	cout << "Error: object not found. No update made." << endl;
 
 }
