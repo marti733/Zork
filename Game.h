@@ -56,7 +56,7 @@ public:
 	void loadRoom();
 	bool isExit();
 	vector<string> splitCommand(string);
-	bool checkConditions(Attack *);
+	bool checkCondition(Attack *);
 };
 
 

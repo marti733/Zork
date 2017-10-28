@@ -147,16 +147,16 @@ void Game::executeCommand(string command) {
 	else if (command == "i"){
 		getInventory();
 	}
-	else if (command == "n"){
+	else if ((command == "n") || command == "north"){
 		navigateDirection("n");
 	}
-	else if (command == "s"){
+	else if (command == "s" || command == "south"){
 		navigateDirection("s");
 	}
-	else if (command == "e"){
+	else if (command == "e" || command == "east"){
 		navigateDirection("e");
 	}
-	else if (command == "w"){
+	else if (command == "w" || command == "west"){
 		navigateDirection("w");
 	}
 	else if (command.find("Add") != string::npos){
@@ -565,7 +565,7 @@ void Game::attackCreature(string command){
 		//Find vulnerability
 		if(creatures[creature]->vulnerability.find(item) != creatures[creature]->vulnerability.end()) {
 			cout << "You assault " << creature << " with " << item << "." << endl;
-			bool result = checkConditions(creatures[creature]->attack);
+			bool result = checkCondition(creatures[creature]->attack);
 
 			//Conditions met
 			if (result) {
@@ -870,7 +870,7 @@ vector<string> Game::splitCommand(string command){
 	return words;
 }
 
-bool Game::checkConditions(Attack * attack){
+bool Game::checkCondition(Attack * attack){
 	Condition* condition = attack->condition;
 	if (condition == nullptr)
 		return true;
