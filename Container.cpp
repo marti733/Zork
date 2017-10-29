@@ -32,13 +32,21 @@ Container::Container(xml_node<>* root){
 		else if (n == "accept"){
 			this->accept.push_back(v);
 		}
-		else if (n == "item"){
+		else if (n == "item" && v == ""){
+			Item* item = new Item(root->first_node());
+			this->items[item->name] = item;
+		}
+		else if (n == "item" && v != ""){
 			Item* item = new Item(root);
 			this->items[item->name] = item;
 		}
 		else if (n == "trigger"){
-			triggers.push_back(new Trigger(root));
+			triggers.push_back(new Trigger(root->first_node()));
 
+		}
+		else if(n == "container"){
+			this->name = n;
+			return;
 		}
 
 		root = root->next_sibling();

@@ -42,18 +42,27 @@ Room::Room(xml_node<> * root){
 			this->items[item->name] = item;
 		}
 		else if (n == "trigger"){
-			triggers.push_back(new Trigger(root));
+			Trigger* trigger = new Trigger(root->first_node());
+			triggers.push_back(trigger);
 		}
 		else if (n == "border"){
 			border = new Border(root->first_node());
 			this->borders[border->direction] = border;
 		}
-		else if (n == "creature"){
+		else if (n == "creature" && v == ""){
 			Creature* creature = new Creature(root->first_node());
 			this->creatures[creature->name] = creature;
 		}
-		else if (n == "container") {
+		else if(n == "creature"){
+			Creature* creature = new Creature(root);
+			this->creatures[creature->name] = creature;
+		}
+		else if (n == "container" && v == "") {
 			Container* container = new Container(root->first_node());
+			this->containers[container->name] = container;
+		}
+		else if(n == "container" && v != ""){
+			Container* container = new Container(root);
 			this->containers[container->name] = container;
 		}
 

@@ -5,6 +5,9 @@
  *      Author: cheyenne
  */
 #include "Attack.h"
+#include <iostream>
+
+using namespace std;
 
 Attack::Attack(xml_node<>* root){
 	string n = root->name();

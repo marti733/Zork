@@ -20,6 +20,7 @@ Item::Item(xml_node<>* root){
 		n = root->name();
 		v = root->value();
 
+
 		if(n == "name"){
 			this->name = v;
 		}
@@ -33,7 +34,7 @@ Item::Item(xml_node<>* root){
 			this->turnon = new TurnOn(root->first_node());
 		}
 		else if (n == "trigger"){
-			Trigger* trig = new Trigger(root);
+			Trigger* trig = new Trigger(root->first_node());
 			triggers.push_back(trig);
 		}
 		else if (n == "writing") {

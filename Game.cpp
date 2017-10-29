@@ -84,13 +84,15 @@ void Game::runGame(string filename) {
 
 	//Run game until exit condition or error occurs
 	while(this->status){
-		bool trigger_found = checkTriggers(command);
-
 		std::cout << "> ";
 		getline(cin, command);
 
-		if (!trigger_found)
+		bool trigger_found = checkTriggers(command);
+
+		if (!trigger_found){
+
 			executeCommand(command);
+		}
 	}
 }
 
@@ -100,32 +102,6 @@ void Game::runGame(string filename) {
  * Return: Override instruction - true for override false for accepting input */
 bool Game::checkTriggers(string command ){
 	bool result = false;
-
-	//Check map item triggers
-	for (map<string, Item*>::iterator it = items.begin(); it != items.end(); it++){
-		//Check triggers exist
-		if(!(it->second->triggers.empty()))
-			result = executeTrigger(it->second->triggers, command);
-
-		if(result)
-			return result;
-	}
-
-	//Check map container triggers
-	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
-		if(!(it->second->triggers.empty()))
-				result = executeTrigger(it->second->triggers, command);
-		if(result)
-			return result;
-	}
-
-	//Check map creature triggers
-	for (map<string, Creature*>::iterator it = creatures.begin(); it != creatures.end(); it++){
-		if(!(it->second->triggers.empty()))
-				result = executeTrigger(it->second->triggers, command);
-		if(result)
-			return result;
-	}
 
 	//Check current room triggers
 	Room * c_room = rooms[location];
@@ -137,9 +113,38 @@ bool Game::checkTriggers(string command ){
 			return result;
 	}
 
+	//Check map item triggers
+	for (map<string, Item*>::iterator it = items.begin(); it != items.end(); it++){
+
+		//Check triggers exist
+		if(!(it->second->triggers.empty()))
+			result = executeTrigger(it->second->triggers, command);
+
+		if(result)
+			return result;
+	}
+
+	//Check map container triggers
+	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
+
+		if(!(it->second->triggers.empty()))
+				result = executeTrigger(it->second->triggers, command);
+		if(result)
+			return result;
+	}
+
+	//Check map creature triggers
+	for (map<string, Creature*>::iterator it = creatures.begin(); it != creatures.end(); it++){
+
+		if(!(it->second->triggers.empty()))
+				result = executeTrigger(it->second->triggers, command);
+		if(result)
+			return result;
+	}
 
 	//Check item triggers in current room
 	for (map<string, Item*>::iterator it = c_room->items.begin(); it != c_room->items.end(); it++){
+
 		result = executeTrigger(it->second->triggers, command);
 
 		if(result)
@@ -149,6 +154,7 @@ bool Game::checkTriggers(string command ){
 
 	//Check container triggers current room
 	for (map<string, Container*>::iterator it = c_room->containers.begin(); it != c_room->containers.end(); it++){
+
 		result = executeTrigger(it->second->triggers, command);
 
 		if(result)
@@ -157,6 +163,7 @@ bool Game::checkTriggers(string command ){
 
 	//Check creature triggers current room
 	for (map<string, Creature*>::iterator it = c_room->creatures.begin(); it != c_room->creatures.end(); it++){
+
 		result = executeTrigger(it->second->triggers, command);
 
 		if(result)
@@ -173,16 +180,17 @@ bool Game::executeTrigger(vector<Trigger*> triggers, string command){
 	for(int i = 0; i < triggers.size(); i++){
 		c_trigger = triggers[i];
 
-		//Check for command or command is trigger command
-		if(c_trigger->command == "" || command == c_trigger->command){
+		//Check for command
+		if(command == c_trigger->command){
 			//Check not done
 			if(c_trigger->type != "done"){
 				result = checkCondition(c_trigger->conditions);
 
 				if(result){
-					if(c_trigger->type == "single")
+					if(c_trigger->type == "single"){
 						c_trigger->type = "done";
-
+						cout << "done" << endl;
+					}
 					if(c_trigger->print != "")
 						cout << c_trigger->print << endl;
 
@@ -979,7 +987,7 @@ bool Game::checkCondition(vector<Condition*> conditions){
 
 		if (condition != nullptr){
 
-			bool hasH = checkHas(condition);;
+			bool hasH = checkHas(condition);
 			char hasO = hasOwner(condition);
 			char hasS = hasStatus(condition);
 
@@ -1013,16 +1021,16 @@ char Game::hasOwner(Condition* con){
 	string owner = con->owner;
 	string object = con->object;
 
-	Item* itemOw;
+	if(owner == "inventory"){
+		if(inventory.find(object) != inventory.end())
+			return 't';
+		else
+			return 'f';
+	}
+
 	Container* containerOw;
 	Creature* creatureOw;
 	Room* roomOw;
-
-
-	//Look for owner as item in game
-	if(items.find(owner) != items.end()){
-		itemOw = items[owner];
-	}
 
 	//Look for owner as room in game
 	if(rooms.find(owner) != rooms.end()){
@@ -1039,24 +1047,9 @@ char Game::hasOwner(Condition* con){
 		creatureOw = creatures[owner];
 	}
 
-	//Look for item in inventory
-	if(inventory.find(owner) != inventory.end()) {
-		itemOw = items[owner];
-	}
-
-	//Look for item in containers in game
-	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
-		if (it->second->items.find(owner) != it->second->items.end()){
-			itemOw = it->second->items[owner];
-		}
-	}
 	//Look for item in rooms and items in containers in rooms
 	for (map<string, Room*>::iterator it = rooms.begin(); it != rooms.end(); it++)
 	{
-		//Look for items in room
-		if(it->second->items.find(owner) != it->second->items.end()){
-			itemOw = it->second->items[owner];
-		}
 
 		//Look for creature in rooms
 		if(it->second->creatures.find(owner) != it->second->creatures.end()){
@@ -1067,23 +1060,10 @@ char Game::hasOwner(Condition* con){
 		if(it->second->containers.find(owner) != it->second->containers.end()){
 			containerOw = it->second->containers[owner];
 		}
-
-		//Look for object as an item in containers in room
-		for (map<string, Container*>::iterator iter = it->second->containers.begin(); iter != it->second->containers.end(); iter++){
-			if (iter->second->items.find(owner) != iter->second->items.end()){
-				itemOw = iter->second->items[owner];
-			}
-		}
 	}
 
 	//Find owner type
-	if(itemOw != nullptr){
-		if (itemOw->status == object)
-			return 't';
-		else
-			return 'f';
-	}
-	else if(containerOw != nullptr){
+	if(containerOw != nullptr){
 		if(containerOw->items.find(object) != containerOw->items.end())
 			return 't';
 		else if(containerOw->status == object)
@@ -1111,15 +1091,14 @@ char Game::hasOwner(Condition* con){
 		else
 			return 'f';
 	}
-	else {
-		return 'f';
-	}
+
+	return 'f';
 
 }
 
 char Game::hasStatus(Condition* con) {
 	if(con->status == "")
-		return false;
+		return 'n';
 
 	string object = con->object;
 	string stat = con->status;

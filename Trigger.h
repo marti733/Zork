@@ -23,7 +23,6 @@ public:
 	string command;
 	string type;
 	string print;
-	string name;
 	vector<string> action;
 
 	Trigger(xml_node<char>* name);

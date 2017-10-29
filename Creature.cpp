@@ -6,6 +6,9 @@
  */
 
 #include "Creature.h"
+#include <iostream>
+
+using namespace std;
 
 Creature::Creature(xml_node<>* root){
 	string n;
@@ -31,7 +34,11 @@ Creature::Creature(xml_node<>* root){
 			this->attack = new Attack(root->first_node());
 		}
 		else if (n == "trigger"){
-			triggers.push_back(new Trigger(root));
+			triggers.push_back(new Trigger(root->first_node()));
+		}
+		else if(n == "creature"){
+			this->name = v;
+			return;
 		}
 
 
