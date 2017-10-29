@@ -390,46 +390,61 @@ void Game::takeItem(string command){
 		cout << "To take an item, the command must be in the form of 'take (item)'." << endl;
 		return;
 	}
-	Room * c_room = rooms.find(location)->second;
+	Room * c_room = rooms[location];
 	string item = com[1];
+	Container * c_container;
 
 	//Check if item is already in inventory
 	if(inventory.find(item) != inventory.end()){
 		cout << "The " << item << " is already in your inventory." << endl;
+		return;
 	}
-	else{
-		// Check if item is in the game
-		if (items.find(item) != items.end()){
-			inventory[item] = items[item];
-			items.erase(item);
-			cout << "The " <<  item << " was taken from the room and is in your inventory." << endl;
-		}
-		else{
-			//Check if item is in the current room
-			if(c_room->items.find(item) != c_room->items.end()) {
-				inventory[item] = c_room->items[item];
-				c_room->items.erase(item);
-				cout << "The " <<  item << " was taken from " << c_room->name << " and added to inventory." <<endl;
-			}
-			else {
-				//Check open containers
-				for(map<string,Container*>::iterator it = c_room->containers.begin(); it!= c_room->containers.end(); it++) {
-					Container * c_container = it->second;
-					if(c_container->status == "open") {
-						//Find item in open container
-						if(c_container->items.find(item) != c_container->items.end()) {
-							inventory[item] = c_container->items[item];
-							c_container->items.erase(item);
-							cout << "The " <<  item << " was taken from " << c_container->name << " and put in your inventory." << endl;
-							return;
-						}
-					}
-				}
 
-				cout << "The " <<  item << " does not exist, try opening a container." << endl;
+	// Check if item is in the game
+	if (items.find(item) != items.end()){
+		inventory[item] = items[item];
+		items.erase(item);
+		cout << "The " <<  item << " was added to your inventory." << endl;
+		return;
+	}
+
+	//Check open containers in game
+	for(map<string,Container*>::iterator it = containers.begin(); it!= containers.end(); it++) {
+		c_container = it->second;
+		if(c_container->status == "open") {
+			//Find item in open container
+			if(c_container->items.find(item) != c_container->items.end()) {
+				inventory[item] = c_container->items[item];
+				c_container->items.erase(item);
+				cout << "The " <<  item << " was taken from " << c_container->name << " and added to your inventory." << endl;
+				return;
 			}
 		}
 	}
+
+	//Check if item is in the current room
+	if(c_room->items.find(item) != c_room->items.end()) {
+		inventory[item] = c_room->items[item];
+		c_room->items.erase(item);
+		cout << "The " <<  item << " was taken from " << c_room->name << " and added to your inventory." <<endl;
+		return;
+	}
+
+	//Check open containers in room
+	for(map<string,Container*>::iterator it = c_room->containers.begin(); it!= c_room->containers.end(); it++) {
+		c_container = it->second;
+		if(c_container->status == "open") {
+			//Find item in open container
+			if(c_container->items.find(item) != c_container->items.end()) {
+				inventory[item] = c_container->items[item];
+				c_container->items.erase(item);
+				cout << "The " <<  item << " was taken from " << c_container->name << " and added to your inventory." << endl;
+				return;
+			}
+		}
+	}
+
+	cout << "The " <<  item << " does not exist, try opening a container." << endl;
 }
 
 /* Adds the item to the containers inventory and and prints “Item (item) added to (container).”
@@ -444,41 +459,44 @@ void Game::putItem(string command){
 		cout << "Error: put command must be in the format of 'put (item) in (container).'" << endl;
 		return;
 	}
-	string item = com[1];
+	string itemFind = com[1];
 	string container = com[3];
 
-	if(inventory.find(item) == inventory.end()){
-		cout << "The " << item << " is not in your inventory" << endl;
+	Item* item;
+
+	if(inventory.find(itemFind) == inventory.end()){
+		cout << "The " << itemFind << " is not in your inventory" << endl;
 	}
 	else{
-		if (containers.find(container) == containers.end()){
-			if(rooms[location]->containers.find(container) == rooms[location]->containers.end()){
-				cout << "The " << container << " does not exist here." << endl;
-				return;
-			}
-			else {
-				if (rooms[location]->containers[container]->status == "open") {
-					rooms[location]->containers[container]->items[item] = inventory[item];
-					inventory.erase(item);
-					cout << "The " << item << " was put in the " << container << endl;
-				}
-				else {
-					cout << "The " << container << " is not open" << endl;
-				}
-			}
-		}
-		else {
-			if (containers[container]->status == "open") {
-				containers[container]->items[item] = inventory[item];
-				inventory.erase(item);
-				cout << "The " << item << " was put in the " << container << endl;
-			}
-			else {
-				cout << "The " << container << " is not open" << endl;
-			}
-		}
+		item = inventory[itemFind];
 	}
 
+	//Find container in game
+	if(containers.find(container) != containers.end()){
+		if(containers[container]->status == "open"){
+			cout << itemFind << " added to " << container << endl;
+			containers[container]->items[itemFind] = item;
+			inventory.erase(itemFind);
+			return;
+		}
+		else{
+			cout << container << " is not open" << endl;
+			return;
+		}
+	}
+	//Find container in room
+	else if(rooms[location]->containers.find(container) == rooms[location]->containers.end()){
+		if(rooms[location]->containers[container]->status == "open"){
+			cout << itemFind << " added to " << container << endl;
+			rooms[location]->containers[container]->items[itemFind] = item;
+			inventory.erase(itemFind);
+			return;
+		}
+		else{
+			cout << container << " is not open" << endl;
+			return;
+		}
+	}
 
 }
 
