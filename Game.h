@@ -57,6 +57,9 @@ public:
 	bool isExit();
 	vector<string> splitCommand(string);
 	bool checkCondition(Attack *);
+	bool checkHas(Condition*);
+	char hasOwner(Condition*);
+	char hasStatus(Condition*);
 };
 
 

@@ -10,7 +10,9 @@ Condition::Condition(xml_node<>* root){
 	string n;
 	string v;
 
-	this->has = "yes";
+	this->has = "";
+	this->owner = "";
+	this->status = "";
 
 
 	while(root != nullptr) {

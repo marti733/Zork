@@ -661,7 +661,7 @@ void Game::addObject(string command) {
 			containerO = it->second->containers[object];
 		}
 		if(it->second->containers.find(loc) != it->second->containers.end()){
-			containerO = it->second->containers[loc];
+			containerL = it->second->containers[loc];
 		}
 
 		//Look for object as an item in containers in room
@@ -875,24 +875,148 @@ bool Game::checkCondition(Attack * attack){
 	if (condition == nullptr)
 		return true;
 
-	//Check has
-	if(condition->has == "yes") {
-		// Check if owner exists or is inventory
-		if((condition->owner == "" )|| (condition->owner == "inventory")) {
-			//Check for item in inventory
-			if(inventory.find(condition->object) != inventory.end()){
-				if(inventory[condition->object]->status == condition->status)
-					return true; //status of object matches
-			}
+	bool hasH = checkHas(condition);;
+	char hasO = hasOwner(condition);
+	char hasS = hasStatus(condition);
+
+	if(hasH){
+		if((hasO == 't' || hasO == 'n') && (hasS == 't' || hasS == 'n')){
+			return true;
 		}
 		else{
-
+			return false;
 		}
-
 	}
 	else {
-
+		if(hasO == 't' || hasS == 't')
+			return false;
+		else
+			return true;
 	}
 
+	return true;
+}
+
+bool Game::checkHas(Condition* con){
+	if(con->has == "yes")
+		return true;
+
 	return false;
+}
+
+char Game::hasOwner(Condition* con){
+	if(con->owner == "")
+		return 'n';
+
+	string owner = con->owner;
+	string object = con->object;
+
+	Item* itemOw;
+	Container* containerOw;
+	Creature* creatureOw;
+	Room* roomOw;
+
+
+	//Look for owner as item in game
+	if(items.find(owner) != items.end()){
+		itemOw = items[owner];
+	}
+
+	//Look for owner as room in game
+	if(rooms.find(owner) != rooms.end()){
+		roomOw = rooms[owner];
+	}
+
+	//Look for owner as container in game
+	if(containers.find(owner) != containers.end()){
+		containerOw = containers[owner];
+	}
+
+	//Look for owner as creature in game
+	if(creatures.find(owner) != creatures.end()) {
+		creatureOw = creatures[owner];
+	}
+
+	//Look for item in inventory
+	if(inventory.find(owner) != inventory.end()) {
+		itemOw = items[owner];
+	}
+
+	//Look for item in containers in game
+	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
+		if (it->second->items.find(owner) != it->second->items.end()){
+			itemOw = it->second->items[owner];
+		}
+	}
+	//Look for item in rooms and items in containers in rooms
+	for (map<string, Room*>::iterator it = rooms.begin(); it != rooms.end(); it++)
+	{
+		//Look for items in room
+		if(it->second->items.find(owner) != it->second->items.end()){
+			itemOw = it->second->items[owner];
+		}
+
+		//Look for creature in rooms
+		if(it->second->creatures.find(owner) != it->second->creatures.end()){
+			creatureOw = it->second->creatures[owner];
+		}
+
+		//Look for object as container in rooms
+		if(it->second->containers.find(owner) != it->second->containers.end()){
+			containerOw = it->second->containers[owner];
+		}
+
+		//Look for object as an item in containers in room
+		for (map<string, Container*>::iterator iter = it->second->containers.begin(); iter != it->second->containers.end(); iter++){
+			if (iter->second->items.find(owner) != iter->second->items.end()){
+				itemOw = iter->second->items[owner];
+			}
+		}
+	}
+
+	//Find owner type
+	if(itemOw != nullptr){
+		if (itemOw->status == object)
+			return 't';
+		else
+			return 'f';
+	}
+	else if(containerOw != nullptr){
+		if(containerOw->items.find(object) != containerOw->items.end())
+			return 't';
+		else if(containerOw->status == object)
+			return 't';
+		else
+			return 'f';
+	}
+	else if(roomOw != nullptr){
+		if(roomOw->items.find(object) != roomOw->items.end())
+			return 't';
+		else if (roomOw->containers.find(object) != roomOw->containers.end())
+			return 't';
+		else if (roomOw->creatures.find(object) != roomOw->creatures.end())
+			return 't';
+		else if (roomOw->type == object)
+			return 't';
+		else
+			return 'f';
+	}
+	else if(creatureOw != nullptr){
+		if(creatureOw->status == object)
+			return 't';
+		else if(creatureOw->vulnerability.find(object) != creatureOw->vulnerability.end())
+			return 't';
+		else
+			return 'f';
+	}
+	else {
+		return 'f';
+	}
+
+}
+
+char Game::hasStatus(Condition* con) {
+	if(con->status == "")
+		return false;
+	return true;
 }

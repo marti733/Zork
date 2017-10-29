@@ -13,6 +13,8 @@ Item::Item(xml_node<>* root){
 	string n;
 	string v;
 
+	this->status = "idle";
+
 	while(root != nullptr) {
 		n = root->name();
 		v = root->value();
