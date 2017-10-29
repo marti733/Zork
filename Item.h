@@ -23,7 +23,7 @@ public:
 	string writing;
 	string description;
 	TurnOn* turnon;
-	Trigger* trigger;
+	vector<Trigger*> triggers;
 
 	Item(xml_node<>* node);
 	virtual ~Item() {}

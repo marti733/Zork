@@ -23,7 +23,7 @@ public:
 	string status;
 	vector<string> accept;
 	string description;
-	Trigger* trigger;
+	vector<Trigger*> triggers;
 	map<string, Item*> items;
 
 	Container(xml_node<>*);

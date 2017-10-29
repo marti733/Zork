@@ -5,6 +5,7 @@
  *      Author: cheyenne
  */
 #include <string>
+#include <vector>
 #include "Attack.h"
 #include "Trigger.h"
 #include "rapidxml.hpp"
@@ -22,7 +23,7 @@ public:
 	string description;
 	Attack* attack;
 	map<string, string> vulnerability;
-	Trigger* trigger;
+	vector<Trigger*> triggers;
 
 	Creature(xml_node<>*);
 	virtual ~Creature() {}

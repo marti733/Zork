@@ -19,7 +19,7 @@ using namespace std;
 
 class Trigger {
 public:
-	map<string, Condition*> conditions;
+	vector<Condition*> conditions;
 	string command;
 	string type;
 	string print;

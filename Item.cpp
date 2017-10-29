@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <vector>
 #include "Item.h"
 using namespace std;
 
@@ -32,7 +33,8 @@ Item::Item(xml_node<>* root){
 			this->turnon = new TurnOn(root->first_node());
 		}
 		else if (n == "trigger"){
-			this->trigger = new Trigger(root);
+			Trigger* trig = new Trigger(root);
+			triggers.push_back(trig);
 		}
 		else if (n == "writing") {
 			this->writing = v;

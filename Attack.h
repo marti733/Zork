@@ -17,7 +17,7 @@ using namespace std;
 
 class Attack {
 public:
-	Condition* condition;
+	vector<Condition*> conditions;
 	string print;
 	vector<string> actions;
 

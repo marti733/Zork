@@ -27,7 +27,7 @@ public:
 	string status;
 	map<string, Border*> borders;
 	map<string, Container*> containers;
-	Trigger* triggers;
+	vector<Trigger*> triggers;
 	map<string, Item*> items;
 	map<string, Creature*> creatures;
 

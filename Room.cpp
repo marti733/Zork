@@ -42,7 +42,7 @@ Room::Room(xml_node<> * root){
 			this->items[item->name] = item;
 		}
 		else if (n == "trigger"){
-			this->triggers = new Trigger(root);
+			triggers.push_back(new Trigger(root));
 		}
 		else if (n == "border"){
 			border = new Border(root->first_node());

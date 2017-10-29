@@ -37,7 +37,7 @@ Container::Container(xml_node<>* root){
 			this->items[item->name] = item;
 		}
 		else if (n == "trigger"){
-			this->trigger = new Trigger(root);
+			triggers.push_back(new Trigger(root));
 
 		}
 

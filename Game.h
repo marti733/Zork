@@ -38,7 +38,8 @@ public:
 	void setStatus(bool);
 	void runGame(string);
 	bool getSetup(string);
-	bool checkTriggers();
+	bool checkTriggers(string);
+	bool executeTrigger(vector<Trigger*>, string);
 	void executeCommand(string);
 	void parseXML(xml_node<> *);
 	void navigateDirection(string);
@@ -56,7 +57,7 @@ public:
 	void loadRoom();
 	bool isExit();
 	vector<string> splitCommand(string);
-	bool checkCondition(Attack *);
+	bool checkCondition(vector<Condition *>);
 	bool checkHas(Condition*);
 	char hasOwner(Condition*);
 	char hasStatus(Condition*);

@@ -84,12 +84,12 @@ void Game::runGame(string filename) {
 
 	//Run game until exit condition or error occurs
 	while(this->status){
-		bool check = checkTriggers();
+		bool trigger_found = checkTriggers(command);
 
 		std::cout << "> ";
 		getline(cin, command);
 
-		if (check)
+		if (!trigger_found)
 			executeCommand(command);
 	}
 }
@@ -98,10 +98,106 @@ void Game::runGame(string filename) {
  *
  * Parameter(s): void
  * Return: Override instruction - true for override false for accepting input */
-bool Game::checkTriggers(){
-	bool check = true;
+bool Game::checkTriggers(string command ){
+	bool result = false;
 
-	return check;
+	//Check map item triggers
+	for (map<string, Item*>::iterator it = items.begin(); it != items.end(); it++){
+		//Check triggers exist
+		if(!(it->second->triggers.empty()))
+			result = executeTrigger(it->second->triggers, command);
+
+		if(result)
+			return result;
+	}
+
+	//Check map container triggers
+	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
+		if(!(it->second->triggers.empty()))
+				result = executeTrigger(it->second->triggers, command);
+		if(result)
+			return result;
+	}
+
+	//Check map creature triggers
+	for (map<string, Creature*>::iterator it = creatures.begin(); it != creatures.end(); it++){
+		if(!(it->second->triggers.empty()))
+				result = executeTrigger(it->second->triggers, command);
+		if(result)
+			return result;
+	}
+
+	//Check current room triggers
+	Room * c_room = rooms[location];
+
+	if(!(c_room->triggers.empty())){
+		result = executeTrigger(c_room->triggers, command);
+
+		if(result)
+			return result;
+	}
+
+
+	//Check item triggers in current room
+	for (map<string, Item*>::iterator it = c_room->items.begin(); it != c_room->items.end(); it++){
+		result = executeTrigger(it->second->triggers, command);
+
+		if(result)
+			return result;
+	}
+
+
+	//Check container triggers current room
+	for (map<string, Container*>::iterator it = c_room->containers.begin(); it != c_room->containers.end(); it++){
+		result = executeTrigger(it->second->triggers, command);
+
+		if(result)
+			return result;
+	}
+
+	//Check creature triggers current room
+	for (map<string, Creature*>::iterator it = c_room->creatures.begin(); it != c_room->creatures.end(); it++){
+		result = executeTrigger(it->second->triggers, command);
+
+		if(result)
+			return result;
+	}
+
+	return false;
+}
+
+bool Game::executeTrigger(vector<Trigger*> triggers, string command){
+	Trigger* c_trigger;
+	bool result;
+
+	for(int i = 0; i < triggers.size(); i++){
+		c_trigger = triggers[i];
+
+		//Check for command or command is trigger command
+		if(c_trigger->command == "" || command == c_trigger->command){
+			//Check not done
+			if(c_trigger->type != "done"){
+				result = checkCondition(c_trigger->conditions);
+
+				if(result){
+					if(c_trigger->type == "single")
+						c_trigger->type = "done";
+
+					if(c_trigger->print != "")
+						cout << c_trigger->print << endl;
+
+					if(!(c_trigger->action.empty())){
+						for(int j = 0; j < c_trigger->action.size(); j++){
+							executeCommand(c_trigger->action[j]);
+						}
+					}
+					return result;
+				}
+			}
+		}
+	}
+
+	return false;
 }
 
 /* If there is no trigger override, execute user input command. Split command into words for
@@ -565,7 +661,7 @@ void Game::attackCreature(string command){
 		//Find vulnerability
 		if(creatures[creature]->vulnerability.find(item) != creatures[creature]->vulnerability.end()) {
 			cout << "You assault " << creature << " with " << item << "." << endl;
-			bool result = checkCondition(creatures[creature]->attack);
+			bool result = checkCondition(creatures[creature]->attack->conditions);
 
 			//Conditions met
 			if (result) {
@@ -870,31 +966,37 @@ vector<string> Game::splitCommand(string command){
 	return words;
 }
 
-bool Game::checkCondition(Attack * attack){
-	Condition* condition = attack->condition;
-	if (condition == nullptr)
+bool Game::checkCondition(vector<Condition*> conditions){
+	Condition* condition;
+	bool result = true;
+
+	if(conditions.empty()){
 		return true;
-
-	bool hasH = checkHas(condition);;
-	char hasO = hasOwner(condition);
-	char hasS = hasStatus(condition);
-
-	if(hasH){
-		if((hasO == 't' || hasO == 'n') && (hasS == 't' || hasS == 'n')){
-			return true;
-		}
-		else{
-			return false;
-		}
-	}
-	else {
-		if(hasO == 't' || hasS == 't')
-			return false;
-		else
-			return true;
 	}
 
-	return true;
+	for(int i = 0; i < conditions.size(); i++) {
+		condition = conditions[i];
+
+		if (condition != nullptr){
+
+			bool hasH = checkHas(condition);;
+			char hasO = hasOwner(condition);
+			char hasS = hasStatus(condition);
+
+			if(hasH){
+				if(!((hasO == 't' || hasO == 'n') && (hasS == 't' || hasS == 'n')))
+					result = false;
+			}
+			else {
+				if(hasO == 't' || hasS == 't')
+					result = false;
+			}
+		}
+	}
+
+	if(result == true)
+		return true;
+	return false;
 }
 
 bool Game::checkHas(Condition* con){

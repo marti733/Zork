@@ -28,7 +28,7 @@ Trigger::Trigger(xml_node<>* root){
 		}
 		else if (n == "condition"){
 			Condition* condition = new Condition(root->first_node());
-			this->conditions[condition->object] = condition;
+			conditions.push_back(condition);
 		}
 		else if (n == "type"){
 			this->type = v;
