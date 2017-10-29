@@ -84,10 +84,9 @@ void Game::runGame(string filename) {
 
 	//Run game until exit condition or error occurs
 	while(this->status){
-		std::cout << "> ";
-		getline(cin, command);
-
 		bool trigger_found = checkTriggers(command);
+
+		getline(cin, command);
 
 		if (!trigger_found){
 
@@ -126,7 +125,6 @@ bool Game::checkTriggers(string command ){
 
 	//Check map container triggers
 	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
-
 		if(!(it->second->triggers.empty()))
 				result = executeTrigger(it->second->triggers, command);
 		if(result)
@@ -135,7 +133,6 @@ bool Game::checkTriggers(string command ){
 
 	//Check map creature triggers
 	for (map<string, Creature*>::iterator it = creatures.begin(); it != creatures.end(); it++){
-
 		if(!(it->second->triggers.empty()))
 				result = executeTrigger(it->second->triggers, command);
 		if(result)
@@ -182,6 +179,7 @@ bool Game::executeTrigger(vector<Trigger*> triggers, string command){
 
 		//Check for command
 		if(command == c_trigger->command){
+
 			//Check not done
 			if(c_trigger->type != "done"){
 				result = checkCondition(c_trigger->conditions);
@@ -189,7 +187,6 @@ bool Game::executeTrigger(vector<Trigger*> triggers, string command){
 				if(result){
 					if(c_trigger->type == "single"){
 						c_trigger->type = "done";
-						cout << "done" << endl;
 					}
 					if(c_trigger->print != "")
 						cout << c_trigger->print << endl;
@@ -473,23 +470,46 @@ void Game::putItem(string command){
 
 	//Find container in game
 	if(containers.find(container) != containers.end()){
-		if(containers[container]->status == "open"){
+
+		if(containers[container]->accepts.size() > 0){
+			for(int i = 0; i < containers[container]->accepts.size(); i ++){
+				cout << itemFind << " added to " << container << endl;
+				containers[container]->items[itemFind] = item;
+				inventory.erase(itemFind);
+				checkTriggers("");
+				return;
+			}
+		}
+		else if(containers[container]->status == "open"){
 			cout << itemFind << " added to " << container << endl;
 			containers[container]->items[itemFind] = item;
 			inventory.erase(itemFind);
+			checkTriggers("");
 			return;
 		}
 		else{
-			cout << container << " is not open" << endl;
+			cout << itemFind << " cannot be put in " << container << endl;
 			return;
 		}
 	}
 	//Find container in room
 	else if(rooms[location]->containers.find(container) == rooms[location]->containers.end()){
-		if(rooms[location]->containers[container]->status == "open"){
+		if(rooms[location]->containers[container]->accepts.size() > 0){
+			for(int i = 0; i < rooms[location]->containers[container]->accepts.size(); i ++){
+				if(rooms[location]->containers[container]->accepts[i] == itemFind){
+					cout << itemFind << " added to " << container << endl;
+					rooms[location]->containers[container]->items[itemFind] = item;
+					inventory.erase(itemFind);
+					checkTriggers("");
+					return;
+				}
+			}
+		}
+		else if(rooms[location]->containers[container]->status == "open"){
 			cout << itemFind << " added to " << container << endl;
 			rooms[location]->containers[container]->items[itemFind] = item;
 			inventory.erase(itemFind);
+			checkTriggers("");
 			return;
 		}
 		else{
@@ -497,7 +517,6 @@ void Game::putItem(string command){
 			return;
 		}
 	}
-
 }
 
 /* prints contents of container in format “(container) contains (item), (item), …”
@@ -565,6 +584,7 @@ bool Game::isExit(){
 	Room * current_room = rooms[this->location];
 
 	if(current_room->type == "exit"){
+		cout << "Victory!" << endl;
 		cout << "Game Over" << endl;
 		return true;
 	}
@@ -691,9 +711,13 @@ void Game::attackCreature(string command){
 
 			//Conditions met
 			if (result) {
-				for (int i = 0;  i < creatures[creature]->attack->actions.size(); i++){
+				cout << creatures[creature]->attack->print << endl;
+
+				for (int i = 0;  i < (creatures.size() > 0) && (creatures[creature]->attack->actions.size()); i++){
 					executeCommand(creatures[creature]->attack->actions[i]);
 				}
+				checkTriggers("");
+				return;
 			}
 			else{
 				cout << "The conditions for attack haven't been met" << endl;
@@ -856,6 +880,7 @@ void Game::deleteObject(string command){
 	}
 	//Look for creatures in game
 	if(creatures.find(object) != creatures.end()) {
+		cout << "here1" << endl;
 		creatures.erase(object);
 		return;
 	}

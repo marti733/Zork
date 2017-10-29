@@ -41,7 +41,6 @@ Creature::Creature(xml_node<>* root){
 			return;
 		}
 
-
 		root = root->next_sibling();
 	}
 }

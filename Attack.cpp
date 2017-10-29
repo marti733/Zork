@@ -10,17 +10,25 @@
 using namespace std;
 
 Attack::Attack(xml_node<>* root){
-	string n = root->name();
-	string v = root->value();
+	string n;
+	string v;
 
-	if(n == "print"){
-		this->print = v;
-	}
-	else if (n == "action"){
-		this->actions.push_back(v);
-	}
-	else if(n == "condition"){
-		conditions.push_back(new Condition(root->first_node()));
+
+	while (root != nullptr){
+		n = root->name();
+		v = root->value();
+
+		if(n == "print"){
+			this->print = v;
+		}
+		else if (n == "action"){
+			this->actions.push_back(v);
+		}
+		else if(n == "condition"){
+			conditions.push_back(new Condition(root->first_node()));
+		}
+
+		root = root->next_sibling();
 	}
 
 }

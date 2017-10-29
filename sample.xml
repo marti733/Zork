@@ -3,8 +3,7 @@
    <room>
       <name>Entrance</name>
       <description>You find yourself at the mouth of a cave and decide that in spite of common sense and any sense of self preservation that you're going to go exploring north into
-it. It's a little dark, but luckily there are some torches on the wall.
-      </description>
+it. It's a little dark, but luckily there are some torches on the wall.</description>
       <item>torch</item>
       <trigger>
          <type>permanent</type>
@@ -23,8 +22,7 @@ it. It's a little dark, but luckily there are some torches on the wall.
    </room>
    <room>
       <name>MainCavern</name>
-      <description>A huge cavern surrounds you with a locked door to the north, a chest in the center, and a very dark corner...
-      </description>
+      <description>A huge cavern surrounds you with a locked door to the north, a chest in the center, and a very dark corner...</description>
       <container>chest</container>
       <container>lock</container>
       <creature>gnome</creature>
@@ -43,8 +41,7 @@ it. It's a little dark, but luckily there are some torches on the wall.
             <object>lock</object>
             <status>locked</status>
          </condition>
-         <print>lock needs a key... not to mention you don't want to get too close to that side of the room... there's something in that corner...
-         </print>
+         <print>lock needs a key... not to mention you don't want to get too close to that side of the room... there's something in that corner...</print>
       </trigger>
    </room>
    <room>
@@ -68,8 +65,7 @@ it. It's a little dark, but luckily there are some torches on the wall.
    </item>
    <item>
       <name>explosive</name>
-      <writing>turn on for boom :-). Warning! Keep away from gnomes!
-      </writing>
+      <writing>turn on for boom :-). Warning! Keep away from gnomes!</writing>
       <status>idle</status>
       <turnon>
          <print>you hear ticking...</print>
@@ -107,8 +103,7 @@ it. It's a little dark, but luckily there are some torches on the wall.
             <status>ticking</status>
          </condition>
          <print>A tiny squeek is uttered from the tiny and, although scary looking, quite innocent creature before it vanishes in a very loud explosion. Tragic, but you find he was
-   sitting on a key!
-         </print>
+   sitting on a key!</print>
          <action>Add key to MainCavern</action>
          <action>Delete gnome</action>
       </attack>
@@ -118,8 +113,7 @@ it. It's a little dark, but luckily there are some torches on the wall.
             <object>torch</object>
             <status>inferno</status>
          </condition>
-         <print>You see a gnome in the dark corner... watching you with its super pointy hat...
-         </print>
+         <print>You see a gnome in the dark corner... watching you with its super pointy hat...</print>
       </trigger>
    </creature>
 </map>

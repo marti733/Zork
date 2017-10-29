@@ -21,7 +21,7 @@ class Container{
 public:
 	string name;
 	string status;
-	vector<string> accept;
+	vector<string> accepts;
 	string description;
 	vector<Trigger*> triggers;
 	map<string, Item*> items;
