@@ -61,6 +61,3 @@ Room::Room(xml_node<> * root){
 	}
 
 }
-
-
-

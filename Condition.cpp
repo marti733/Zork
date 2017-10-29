@@ -5,12 +5,14 @@
  *      Author: cheyenne
  */
 #include "Condition.h"
+#include <iostream>
+
+using namespace std;
 
 Condition::Condition(xml_node<>* root){
 	string n;
 	string v;
 
-	this->has = "";
 	this->owner = "";
 	this->status = "";
 
@@ -31,6 +33,8 @@ Condition::Condition(xml_node<>* root){
 		else if(n == "object"){
 			this->object = v;
 		}
+
+		root = root->next_sibling();
 	}
 }
 

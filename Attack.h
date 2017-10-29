@@ -25,6 +25,4 @@ public:
 	virtual ~Attack() {}
 };
 
-
-
 #endif /* ATTACK_H_ */

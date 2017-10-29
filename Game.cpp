@@ -898,7 +898,7 @@ bool Game::checkCondition(Attack * attack){
 }
 
 bool Game::checkHas(Condition* con){
-	if(con->has == "yes")
+	if(con->has == "yes" || con->has == "")
 		return true;
 
 	return false;
@@ -1052,8 +1052,9 @@ char Game::hasStatus(Condition* con) {
 	}
 	//Look for item in inventory
 	if(inventory.find(object) != inventory.end()) {
-		if(inventory[object]->status == stat)
+		if(inventory[object]->status == stat){
 			return 't';
+		}
 		else
 			return 'f';
 	}
