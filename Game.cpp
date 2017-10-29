@@ -1018,5 +1018,92 @@ char Game::hasOwner(Condition* con){
 char Game::hasStatus(Condition* con) {
 	if(con->status == "")
 		return false;
-	return true;
+
+	string object = con->object;
+	string stat = con->status;
+
+	//Look for items in game
+	if(items.find(object) != items.end()){
+		if(items[object]->status == stat)
+			return 't';
+		else
+			return 'f';
+	}
+	//Look for rooms in game
+	if(rooms.find(object) != rooms.end()){
+		if(rooms[object]->status == stat)
+			return 't';
+		else
+			return 'f';
+	}
+	//Look for containers in game
+	if(containers.find(object) != containers.end()){
+		if(containers[object]->status == stat)
+			return 't';
+		else
+			return 'f';
+	}
+	//Look for creatures in game
+	if(creatures.find(object) != creatures.end()) {
+		if(creatures[object]->status == stat)
+			return 't';
+		else
+			return 'f';
+	}
+	//Look for item in inventory
+	if(inventory.find(object) != inventory.end()) {
+		if(inventory[object]->status == stat)
+			return 't';
+		else
+			return 'f';
+	}
+	//Look for item in containers in game
+	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
+		if (it->second->items.find(object) != it->second->items.end()){
+			if(it->second->items[object]->status == stat)
+				return 't';
+			else
+				return 'f';
+		}
+	}
+	//Look for item in rooms and items in containers in rooms
+	for (map<string, Room*>::iterator it = rooms.begin(); it != rooms.end(); it++)
+	{
+		//Look for items in room
+		if(it->second->items.find(object) != it->second->items.end()){
+			if(it->second->items[object]->status == stat)
+				return 't';
+			else
+				return 'f';
+		}
+
+		//Look for creature in rooms
+		if(it->second->creatures.find(object) != it->second->creatures.end()){
+			if(it->second->creatures[object]->status == stat)
+				return 't';
+			else
+				return 'f';
+		}
+
+		//Look for container in rooms
+		if(it->second->containers.find(object) != it->second->containers.end()){
+			if(it->second->containers[object]->status == stat)
+				return 't';
+			else
+				return 'f';
+		}
+
+
+		//Look for item in containers in room
+		for (map<string, Container*>::iterator iter = it->second->containers.begin(); iter != it->second->containers.end(); iter++){
+			if (iter->second->items.find(object) != iter->second->items.end()){
+				if(iter->second->items[object]->status == stat)
+					return 't';
+				else
+					return 'f';
+			}
+		}
+	}
+	cout << "Error: object not found." << endl;
+	return 'f';
 }
