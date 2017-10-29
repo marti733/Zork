@@ -899,32 +899,38 @@ void Game::updateObject(string command){
 	//Look for items in game
 	if(items.find(object) != items.end()){
 		items[object]->status = stat;
+		checkTriggers("");
 		return;
 	}
 	//Look for rooms in game
 	if(rooms.find(object) != rooms.end()){
 		rooms[object]->status = stat;
+		checkTriggers("");
 		return;
 	}
 	//Look for containers in game
 	if(containers.find(object) != containers.end()){
 		containers[object]->status = stat;
+		checkTriggers("");
 		return;
 	}
 	//Look for creatures in game
 	if(creatures.find(object) != creatures.end()) {
 		creatures[object]->status = stat;
+		checkTriggers("");
 		return;
 	}
 	//Look for item in inventory
 	if(inventory.find(object) != inventory.end()) {
 		inventory[object]->status = stat;
+		checkTriggers("");
 		return;
 	}
 	//Look for item in containers in game
 	for (map<string, Container*>::iterator it = containers.begin(); it != containers.end(); it++){
 		if (it->second->items.find(object) != it->second->items.end()){
 			it->second->items[object]->status = stat;
+			checkTriggers("");
 			return;
 		}
 	}
@@ -934,22 +940,26 @@ void Game::updateObject(string command){
 		//Look for items in room
 		if(it->second->items.find(object) != it->second->items.end()){
 			it->second->items[object]->status = stat;
+			checkTriggers("");
 			return;
 		}
 		//Look for creature in rooms
 		if(it->second->creatures.find(object) != it->second->creatures.end()){
 			it->second->creatures[object]->status = stat;
+			checkTriggers("");
 			return;
 		}
 		//Look for container in rooms
 		if(it->second->containers.find(object) != it->second->containers.end()){
 			it->second->containers[object]->status = stat;
+			checkTriggers("");
 			return;
 		}
 		//Look for item in containers in room
 		for (map<string, Container*>::iterator iter = it->second->containers.begin(); iter != it->second->containers.end(); iter++){
 			if (iter->second->items.find(object) != iter->second->items.end()){
 				iter->second->items[object]->status = stat;
+				checkTriggers("");
 				return;
 			}
 		}
