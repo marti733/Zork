@@ -17,24 +17,7 @@
 using namespace rapidxml;
 using namespace std;
 
-/* Returns the status of the game
- *
- * Parameter(s): VOID
- * Return: Status of the game */
-bool Game::getStatus() {
-		return status;
-}
-
-/*
- * Sets / updates the status of the game
- * Parameter(s): Status value to set
- * Return: void */
-void Game::setStatus(bool n) {
-	if (n)
-		this->status = true;
-	else
-		this->status = false;
-}
+/* -------------------------------------------------------- CONVERT FILE ----------------------------------------------------------------- */
 
 /* Setups the structure of the game by reading in the xml file and extracting the data
  * into separate elements and checks for validity of data
@@ -70,6 +53,55 @@ bool Game::getSetup(string filename) {
 	return getStatus();
 }
 
+/* Takes in xml data structure and adds elements to the game
+ *
+ * Parameter(s): xml filename
+ * Return: status of the game */
+void Game::parseXML(xml_node<> * root){
+	while(root != nullptr){
+		if(string((root->name())) == "room") {
+			Room* room = new Room(root->first_node());
+			rooms[room->name] = room;
+		}
+		else if(string((root->name())) == "item") {
+			Item* item = new Item(root->first_node());
+			items[item->name] = item;
+		}
+		else if(string((root->name())) == "container") {
+			Container* container = new Container(root->first_node());
+			containers[container->name] = container;
+		}
+		else if(string((root->name())) == "creature") {
+			Creature* creature = new Creature(root->first_node());
+			creatures[creature->name] = creature;
+		} else {
+			cout << "Error: Not a supported object" << endl;
+		}
+
+		root = root->next_sibling();
+	}
+}
+
+/* -------------------------------------------------------- RUN GAME ----------------------------------------------------------------- */
+
+/* Returns the status of the game
+ *
+ * Parameter(s): VOID
+ * Return: Status of the game */
+bool Game::getStatus() {
+		return status;
+}
+
+/*
+ * Sets / updates the status of the game
+ * Parameter(s): Status value to set
+ * Return: void */
+void Game::setStatus(bool n) {
+	if (n)
+		this->status = true;
+	else
+		this->status = false;
+}
 
 /* Starts game interface and handles input and output after initial setup
  *
@@ -90,12 +122,12 @@ void Game::runGame(string filename) {
 
 		if (!trigger_found){
 
-			executeCommand(command);
+			executeCommand(command, true);
 		}
 	}
 }
 
-/* Check all object triggers and output appropriate action to override input or accept user input
+/* Check all object triggers and output appropriate action to override input or continue with user action
  *
  * Parameter(s): void
  * Return: Override instruction - true for override false for accepting input */
@@ -170,6 +202,10 @@ bool Game::checkTriggers(string command ){
 	return false;
 }
 
+/* Once a trigger is found run through and find/match necessary conditions and then execute the trigger
+ *
+ * Parameter(s): triggers and user input
+ * Return: Override instruction - true for override false for accepting input */
 bool Game::executeTrigger(vector<Trigger*> triggers, string command){
 	Trigger* c_trigger;
 	bool result;
@@ -193,7 +229,7 @@ bool Game::executeTrigger(vector<Trigger*> triggers, string command){
 
 					if(!(c_trigger->action.empty())){
 						for(int j = 0; j < c_trigger->action.size(); j++){
-							executeCommand(c_trigger->action[j]);
+							executeCommand(c_trigger->action[j], false);
 						}
 					}
 					return result;
@@ -210,7 +246,7 @@ bool Game::executeTrigger(vector<Trigger*> triggers, string command){
  *
  * Parameter(s): user input command
  * Return: void */
-void Game::executeCommand(string command) {
+void Game::executeCommand(string command, bool userInput) {
 
 	stringstream strstr(command);
 
@@ -260,16 +296,16 @@ void Game::executeCommand(string command) {
 	else if (command == "w" || command == "west"){
 		navigateDirection("w");
 	}
-	else if (command.find("Add") != string::npos){
+	else if (command.find("Add" && !userInput) != string::npos){
 		addObject(command);
 	}
-	else if (command.find("Delete") != string::npos){
+	else if (command.find("Delete" && !userInput) != string::npos){
 		deleteObject(command);
 	}
-	else if (command.find("Update") != string::npos){
+	else if (command.find("Update" && !userInput) != string::npos){
 		updateObject(command);
 	}
-	else if (command.find("Game Over") != string::npos){
+	else if (command.find("Game Over" && !userInput) != string::npos){
 		std::cout << "Victory!" << std::endl;
 	}
 	//FOR TESTING REMOVE BEFORE DEMO
@@ -289,34 +325,7 @@ void Game::executeCommand(string command) {
 
 }
 
-/* Takes in xml data structure and adds elements to the game
- *
- * Parameter(s): xml filename
- * Return: status of the game */
-void Game::parseXML(xml_node<> * root){
-	while(root != nullptr){
-		if(string((root->name())) == "room") {
-			Room* room = new Room(root->first_node());
-			rooms[room->name] = room;
-		}
-		else if(string((root->name())) == "item") {
-			Item* item = new Item(root->first_node());
-			items[item->name] = item;
-		}
-		else if(string((root->name())) == "container") {
-			Container* container = new Container(root->first_node());
-			containers[container->name] = container;
-		}
-		else if(string((root->name())) == "creature") {
-			Creature* creature = new Creature(root->first_node());
-			creatures[creature->name] = creature;
-		} else {
-			cout << "Error: Not a supported object" << endl;
-		}
-
-		root = root->next_sibling();
-	}
-}
+/* ------------------------------------------------------- HANDLE COMMANDS --------------------------------------------------------------------- */
 
 /* Movement commands to put the player in a different room. If the indicated direction
  * leads to a new room, the description of the new room is be printed to the screen.
@@ -676,7 +685,7 @@ void Game::turnOn(string command){
 	if (inventory[item]->turnon->action == ""){
 		return;
 	}
-	executeCommand(inventory[item]->turnon->action);
+	executeCommand(inventory[item]->turnon->action, false);
 
 }
 
@@ -714,7 +723,7 @@ void Game::attackCreature(string command){
 				cout << creatures[creature]->attack->print << endl;
 
 				for (int i = 0;  i < (creatures.size() > 0) && (creatures[creature]->attack->actions.size()); i++){
-					executeCommand(creatures[creature]->attack->actions[i]);
+					executeCommand(creatures[creature]->attack->actions[i], false);
 				}
 				checkTriggers("");
 				return;
@@ -735,6 +744,8 @@ void Game::attackCreature(string command){
 		cout << "The " << creature << " is not here" << endl;
 	}
 }
+
+/* ------------------------------------------------------- INTERNAL COMMANDS --------------------------------------------------------------------- */
 
 /* Creates instance of object with a specific owner (does not work on the player's inventory).
  *
@@ -1011,6 +1022,7 @@ void Game::updateObject(string command){
 
 }
 
+/* ------------------------------------------------------- HELPER FUNCTIONS --------------------------------------------------------------------- */
 /* Creates a vector of words from user input command
  *
  * Parameter(s): Command to be parsed
@@ -1027,6 +1039,10 @@ vector<string> Game::splitCommand(string command){
 	return words;
 }
 
+/* Creates a vector of words from user input command
+ *
+ * Parameter(s): Command to be parsed
+ * Return: Vector of words */
 bool Game::checkCondition(vector<Condition*> conditions){
 	Condition* condition;
 	bool result = true;
@@ -1060,6 +1076,10 @@ bool Game::checkCondition(vector<Condition*> conditions){
 	return false;
 }
 
+/* Checks condition to see if there is a has part of the condition
+ *
+ * Parameter(s): Condition to check
+ * Return: Has status */
 bool Game::checkHas(Condition* con){
 	if(con->has == "yes" || con->has == "")
 		return true;
@@ -1067,6 +1087,10 @@ bool Game::checkHas(Condition* con){
 	return false;
 }
 
+/* Checks condition to see if there is a owner specified and if there is check that the ownership is valid
+ *
+ * Parameter(s): Condition to check
+ * Return: Owner status */
 char Game::hasOwner(Condition* con){
 	if(con->owner == "")
 		return 'n';
@@ -1149,6 +1173,10 @@ char Game::hasOwner(Condition* con){
 
 }
 
+/* Checks condition to see if there is a status specified and if there is check that the status matches expected status
+ *
+ * Parameter(s): Condition to check
+ * Return: Status status */
 char Game::hasStatus(Condition* con) {
 	if(con->status == "")
 		return 'n';

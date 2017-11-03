@@ -40,7 +40,7 @@ public:
 	bool getSetup(string);
 	bool checkTriggers(string);
 	bool executeTrigger(vector<Trigger*>, string);
-	void executeCommand(string);
+	void executeCommand(string, bool);
 	void parseXML(xml_node<> *);
 	void navigateDirection(string);
 	void getInventory(void);
