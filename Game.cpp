@@ -25,7 +25,7 @@ using namespace std;
  * Parameter(s): xml filename
  * Return: status of the game */
 bool Game::getSetup(string filename) {
-	std::ifstream file("sample.xml");
+	std::ifstream file(filename);
 
 	if(!(file.is_open())){
 		std::cout << "Cannot open file!" << std::endl;
@@ -109,6 +109,8 @@ void Game::setStatus(bool n) {
  * Return: void */
 void Game::runGame(string filename) {
 	this->getSetup(filename);
+
+	setupRoom("Entrance");
 
 	string command;
 	this->location = "Entrance";
@@ -325,6 +327,54 @@ void Game::executeCommand(string command, bool userInput) {
 
 }
 
+/* Given the name of the room put objects into the room
+ *
+ * Parameter(s): room name
+ * Return: void */
+void Game::setupRoom(string location) {
+	Room* c_room = rooms[location];
+
+	//Go through containers
+	for(map<string,Container*>::iterator it = containers.begin(); it!= containers.end(); it++) {
+		for(map<string,Container*>::iterator iter = c_room->containers.begin(); iter!= c_room->containers.end(); iter++) {
+			if(it->second->name == iter->second->name){
+				iter->second = it->second;
+				containers.erase(it->second->name);
+			}
+
+			//Go through items in containers
+			for(map<string, Item*>::iterator j = iter->second->items.begin(); j!= iter->second->items.end(); j++) {
+				for(map<string, Item*>::iterator k = items.begin(); k!= items.end(); k++) {
+					if(k->second->name == j->second->name){
+						j->second = k->second;
+						items.erase(k->second->name);
+					}
+				}
+			}
+		}
+	}
+
+	//Go through creatures
+	for(map<string,Creature*>::iterator it = creatures.begin(); it!= creatures.end(); it++) {
+		for(map<string,Creature*>::iterator iter = c_room->creatures.begin(); iter!= c_room->creatures.end(); iter++) {
+			if(it->second->name == iter->second->name){
+				iter->second = it->second;
+				creatures.erase(it->second->name);
+			}
+		}
+	}
+
+	//Go through items
+	for(map<string, Item*>::iterator it = items.begin(); it!= items.end(); it++) {
+		for(map<string, Item*>::iterator iter = c_room->items.begin(); iter!= c_room->items.end(); iter++) {
+			if(it->second->name == iter->second->name){
+				iter->second = it->second;
+				items.erase(it->second->name);
+			}
+		}
+	}
+
+}
 /* ------------------------------------------------------- HANDLE COMMANDS --------------------------------------------------------------------- */
 
 /* Movement commands to put the player in a different room. If the indicated direction
@@ -406,14 +456,6 @@ void Game::takeItem(string command){
 		return;
 	}
 
-	// Check if item is in the game
-	if (items.find(item) != items.end()){
-		inventory[item] = items[item];
-		items.erase(item);
-		cout << "The " <<  item << " was added to your inventory." << endl;
-		return;
-	}
-
 	//Check open containers in game
 	for(map<string,Container*>::iterator it = containers.begin(); it!= containers.end(); it++) {
 		c_container = it->second;
@@ -472,6 +514,7 @@ void Game::putItem(string command){
 
 	if(inventory.find(itemFind) == inventory.end()){
 		cout << "The " << itemFind << " is not in your inventory" << endl;
+		return;
 	}
 	else{
 		item = inventory[itemFind];
@@ -526,6 +569,8 @@ void Game::putItem(string command){
 			return;
 		}
 	}
+
+	cout << "here" << endl;
 }
 
 /* prints contents of container in format “(container) contains (item), (item), …”

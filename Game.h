@@ -61,6 +61,7 @@ public:
 	bool checkHas(Condition*);
 	char hasOwner(Condition*);
 	char hasStatus(Condition*);
+	void setupRoom(string);
 };
 
 
