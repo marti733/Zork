@@ -33,6 +33,7 @@ bool Game::getSetup(string filename) {
 		return false;
  	}
 
+
 	xml_document<> doc;
 	xml_node<> * root;
 
@@ -45,10 +46,8 @@ bool Game::getSetup(string filename) {
 
 	if (root == nullptr)
 		setStatus(false);
-	else {
-		setStatus(true);
+	else
 		parseXML(root->first_node());
-	}
 
 	return getStatus();
 }
@@ -80,6 +79,7 @@ void Game::parseXML(xml_node<> * root){
 
 		root = root->next_sibling();
 	}
+
 }
 
 /* -------------------------------------------------------- RUN GAME ----------------------------------------------------------------- */
@@ -89,7 +89,7 @@ void Game::parseXML(xml_node<> * root){
  * Parameter(s): VOID
  * Return: Status of the game */
 bool Game::getStatus() {
-		return status;
+	return status;
 }
 
 /*
@@ -97,10 +97,7 @@ bool Game::getStatus() {
  * Parameter(s): Status value to set
  * Return: void */
 void Game::setStatus(bool n) {
-	if (n)
-		this->status = true;
-	else
-		this->status = false;
+	this->status = n;
 }
 
 /* Starts game interface and handles input and output after initial setup
@@ -120,10 +117,8 @@ void Game::runGame(string filename) {
 	while(this->status){
 		bool trigger_found = checkTriggers(command);
 
-		getline(cin, command);
-
 		if (!trigger_found){
-
+			getline(cin, command);
 			executeCommand(command, true);
 		}
 	}
@@ -238,6 +233,27 @@ bool Game::executeTrigger(vector<Trigger*> triggers, string command){
 				}
 			}
 		}
+		else if(c_trigger->command == ""){
+			//Check not done
+			if(c_trigger->type != "done"){
+				result = checkCondition(c_trigger->conditions);
+
+				if(result){
+					if(c_trigger->type == "single"){
+						c_trigger->type = "done";
+					}
+					if(c_trigger->print != "")
+						cout << c_trigger->print << endl;
+
+					if(!(c_trigger->action.empty())){
+						for(int j = 0; j < c_trigger->action.size(); j++){
+							executeCommand(c_trigger->action[j], false);
+						}
+					}
+					return result;
+				}
+			}
+		}
 	}
 
 	return false;
@@ -298,17 +314,18 @@ void Game::executeCommand(string command, bool userInput) {
 	else if (command == "w" || command == "west"){
 		navigateDirection("w");
 	}
-	else if (command.find("Add" && !userInput) != string::npos){
+	else if ((command.find("Add") != string::npos)  && !userInput ){
 		addObject(command);
 	}
-	else if (command.find("Delete" && !userInput) != string::npos){
+	else if ((command.find("Delete") != string::npos)  && !userInput ){
 		deleteObject(command);
 	}
-	else if (command.find("Update" && !userInput) != string::npos){
+	else if ((command.find("Update") != string::npos)  && !userInput ){
 		updateObject(command);
 	}
-	else if (command.find("Game Over" && !userInput) != string::npos){
+	else if ((command.find("Game Over") != string::npos)  && !userInput ){
 		std::cout << "Victory!" << std::endl;
+		setStatus(false);
 	}
 	//FOR TESTING REMOVE BEFORE DEMO
 	else if (command.find("q") != string::npos || command.find("quit") != string::npos){
@@ -322,7 +339,8 @@ void Game::executeCommand(string command, bool userInput) {
 		}
 	}
 	else {
-		std::cout << "That command doesn't exist." << std::endl;
+
+		std::cout << command << " doesn't exist." << std::endl;
 	}
 
 }
@@ -339,15 +357,14 @@ void Game::setupRoom(string location) {
 		for(map<string,Container*>::iterator iter = c_room->containers.begin(); iter!= c_room->containers.end(); iter++) {
 			if(it->second->name == iter->second->name){
 				iter->second = it->second;
-				containers.erase(it->second->name);
 			}
 
 			//Go through items in containers
 			for(map<string, Item*>::iterator j = iter->second->items.begin(); j!= iter->second->items.end(); j++) {
 				for(map<string, Item*>::iterator k = items.begin(); k!= items.end(); k++) {
+					cout << "item: " << k->second->name;
 					if(k->second->name == j->second->name){
 						j->second = k->second;
-						items.erase(k->second->name);
 					}
 				}
 			}
@@ -359,19 +376,21 @@ void Game::setupRoom(string location) {
 		for(map<string,Creature*>::iterator iter = c_room->creatures.begin(); iter!= c_room->creatures.end(); iter++) {
 			if(it->second->name == iter->second->name){
 				iter->second = it->second;
-				creatures.erase(it->second->name);
 			}
 		}
 	}
 
 	//Go through items
-	for(map<string, Item*>::iterator it = items.begin(); it!= items.end(); it++) {
+	for(map<string, Item*>::iterator it = items.begin(); it != items.end(); it++) {
 		for(map<string, Item*>::iterator iter = c_room->items.begin(); iter!= c_room->items.end(); iter++) {
 			if(it->second->name == iter->second->name){
 				iter->second = it->second;
-				items.erase(it->second->name);
 			}
 		}
+	}
+
+	for(map<string, Item*>::iterator iter = c_room->items.begin(); iter!= c_room->items.end(); iter++) {
+
 	}
 
 }
@@ -503,6 +522,8 @@ void Game::takeItem(string command){
  * Return: void */
 void Game::putItem(string command){
 	vector<string> com = splitCommand(command);
+	Room * c_room = rooms[location];
+
 	if(com.size() < 4) {
 		cout << "Error: put command must be in the format of 'put (item) in (container).'" << endl;
 		return;
@@ -522,7 +543,6 @@ void Game::putItem(string command){
 
 	//Find container in game
 	if(containers.find(container) != containers.end()){
-
 		if(containers[container]->accepts.size() > 0){
 			for(int i = 0; i < containers[container]->accepts.size(); i ++){
 				cout << itemFind << " added to " << container << endl;
@@ -545,7 +565,7 @@ void Game::putItem(string command){
 		}
 	}
 	//Find container in room
-	else if(rooms[location]->containers.find(container) == rooms[location]->containers.end()){
+	else if(c_room->containers.find(container) != c_room->containers.end()){
 		if(rooms[location]->containers[container]->accepts.size() > 0){
 			for(int i = 0; i < rooms[location]->containers[container]->accepts.size(); i ++){
 				if(rooms[location]->containers[container]->accepts[i] == itemFind){
@@ -570,7 +590,10 @@ void Game::putItem(string command){
 		}
 	}
 
-	cout << "here" << endl;
+	else {
+		cout << container << " is not here" << endl;
+	}
+
 }
 
 /* prints contents of container in format “(container) contains (item), (item), …”
@@ -588,6 +611,8 @@ void Game::openObject(string command){
 	}
 
 	string cont = com[1];
+
+	//search containers in game
 	if(containers.find(cont) != containers.end()){
 		if(containers[cont]->status == "locked"){
 			cout << cont << " is locked." << endl;
@@ -595,8 +620,7 @@ void Game::openObject(string command){
 		else {
 			containers[cont]->status = "open";
 			cout << cont << " contains: ";
-			for (map<string, Item*>::iterator it = containers[cont]->items.begin(); it != containers[cont]->items.end(); it++)
-			{
+			for (map<string, Item*>::iterator it = containers[cont]->items.begin(); it != containers[cont]->items.end(); it++) {
 				if (it == containers[cont]->items.begin())
 					cout << it->second->name;
 				else
@@ -605,12 +629,14 @@ void Game::openObject(string command){
 			cout << "." << std::endl;
 		}
 	}
+	//search containers in room
 	else if (c_room->containers.find(cont) != c_room->containers.end()){
 		if (c_room->containers[cont]->status == "locked"){
 			cout << cont << " is locked." << endl;
 		}
 		else {
 			c_room->containers[cont]->status = "open";
+			cout << "in room " << endl;
 			cout << cont << " contains: ";
 			for (map<string, Item*>::iterator it = c_room->containers[cont]->items.begin(); it != c_room->containers[cont]->items.end(); it++)
 			{
@@ -638,8 +664,8 @@ bool Game::isExit(){
 	Room * current_room = rooms[this->location];
 
 	if(current_room->type == "exit"){
-		cout << "Victory!" << endl;
 		cout << "Game Over" << endl;
+		setStatus(false);
 		return true;
 	}
 	else {
@@ -761,20 +787,23 @@ void Game::attackCreature(string command){
 		//Find vulnerability
 		if(creatures[creature]->vulnerability.find(item) != creatures[creature]->vulnerability.end()) {
 			cout << "You assault " << creature << " with " << item << "." << endl;
-			bool result = checkCondition(creatures[creature]->attack->conditions);
 
-			//Conditions met
-			if (result) {
-				cout << creatures[creature]->attack->print << endl;
+			if(creatures[creature]->attack != nullptr){
+				bool result = checkCondition(creatures[creature]->attack->conditions);
 
-				for (int i = 0;  i < (creatures.size() > 0) && (creatures[creature]->attack->actions.size()); i++){
-					executeCommand(creatures[creature]->attack->actions[i], false);
+				//Conditions met
+				if (result) {
+					cout << creatures[creature]->attack->print << endl;
+
+					for (int i = 0;  i < (creatures.size() > 0) && (creatures[creature]->attack->actions.size()); i++){
+						executeCommand(creatures[creature]->attack->actions[i], false);
+					}
+					checkTriggers("");
+					return;
 				}
-				checkTriggers("");
-				return;
-			}
-			else{
-				cout << "The conditions for attack haven't been met" << endl;
+				else{
+					cout << "The conditions for attack haven't been met" << endl;
+				}
 			}
 		}
 		else
@@ -1093,13 +1122,11 @@ bool Game::checkCondition(vector<Condition*> conditions){
 	bool result = true;
 
 	if(conditions.empty()){
-		return true;
+		return result;
 	}
 
-	for(int i = 0; i < conditions.size(); i++) {
-		condition = conditions[i];
-
-		if (condition != nullptr){
+	for (int i = 0; i < conditions.size(); i++){
+			condition = conditions[i];
 
 			bool hasH = checkHas(condition);
 			char hasO = hasOwner(condition);
@@ -1113,12 +1140,9 @@ bool Game::checkCondition(vector<Condition*> conditions){
 				if(hasO == 't' || hasS == 't')
 					result = false;
 			}
-		}
 	}
 
-	if(result == true)
-		return true;
-	return false;
+	return result;
 }
 
 /* Checks condition to see if there is a has part of the condition

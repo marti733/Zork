@@ -20,7 +20,7 @@ int main(int argc, char ** argv) {
 		return EXIT_FAILURE;
 	}*/
 
-	string file = "containersample.xml";
+	string file = "samples/triggersample.xml";
 
 	Game* g = new Game(1);
 	g->runGame(file);
