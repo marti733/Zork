@@ -119,7 +119,9 @@ void Game::runGame(string filename) {
 
 		if (!trigger_found){
 			getline(cin, command);
-			executeCommand(command, true);
+			checkTriggers(command);
+			if(this->status)
+				executeCommand(command, true);
 		}
 	}
 }
@@ -326,6 +328,7 @@ void Game::executeCommand(string command, bool userInput) {
 	else if ((command.find("Game Over") != string::npos)  && !userInput ){
 		std::cout << "Victory!" << std::endl;
 		setStatus(false);
+
 	}
 	//FOR TESTING REMOVE BEFORE DEMO
 	else if (command.find("q") != string::npos || command.find("quit") != string::npos){
@@ -426,6 +429,7 @@ void Game::navigateDirection(string direction){
 		cout << "Can’t go that way." << endl;
 	else {
 		this->location = it->second->name;
+		setupRoom(location);
 		cout << rooms[location]->description << endl;
 	}
 
@@ -795,8 +799,14 @@ void Game::attackCreature(string command){
 				if (result) {
 					cout << creatures[creature]->attack->print << endl;
 
-					for (int i = 0;  i < (creatures.size() > 0) && (creatures[creature]->attack->actions.size()); i++){
-						executeCommand(creatures[creature]->attack->actions[i], false);
+					for (int i = 0;  i < creatures[creature]->attack->actions.size(); i++){
+						if((creatures[creature]->attack->actions[i].find("Delete") != string::npos) && (creatures[creature]->attack->actions[i].find(creatures[creature]->name) != string::npos)){
+							executeCommand(creatures[creature]->attack->actions[i], false);
+							break;
+						}
+						else {
+							executeCommand(creatures[creature]->attack->actions[i], false);
+						}
 					}
 					checkTriggers("");
 					return;
@@ -965,7 +975,6 @@ void Game::deleteObject(string command){
 	}
 	//Look for creatures in game
 	if(creatures.find(object) != creatures.end()) {
-		cout << "here1" << endl;
 		creatures.erase(object);
 		return;
 	}
