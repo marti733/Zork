@@ -355,14 +355,23 @@ void Game::executeCommand(string command, bool userInput) {
 void Game::setupRoom(string location) {
 	Room* c_room = rooms[location];
 
-	//Go through containers
+	// Put containers in game in current room
 	for(map<string,Container*>::iterator it = containers.begin(); it!= containers.end(); it++) {
+		//items in game
+		for(map<string, Item*>::iterator j = items.begin(); j!= items.end(); j++){
+			for(map<string, Item*>::iterator k = it->second->items.begin(); k!= it->second->items.end(); k++){
+				if(j->second->name == k->second->name){
+					k->second = j->second;
+				}
+			}
+		}
 		for(map<string,Container*>::iterator iter = c_room->containers.begin(); iter!= c_room->containers.end(); iter++) {
 			if(it->second->name == iter->second->name){
 				iter->second = it->second;
 			}
 
-			//Go through items in containers
+
+			//Put items in game in container in room
 			for(map<string, Item*>::iterator j = iter->second->items.begin(); j!= iter->second->items.end(); j++) {
 				for(map<string, Item*>::iterator k = items.begin(); k!= items.end(); k++) {
 					cout << "item: " << k->second->name;
@@ -620,18 +629,22 @@ void Game::openObject(string command){
 	if(containers.find(cont) != containers.end()){
 		if(containers[cont]->status == "locked"){
 			cout << cont << " is locked." << endl;
+			return;
 		}
-		else {
-			containers[cont]->status = "open";
-			cout << cont << " contains: ";
-			for (map<string, Item*>::iterator it = containers[cont]->items.begin(); it != containers[cont]->items.end(); it++) {
-				if (it == containers[cont]->items.begin())
-					cout << it->second->name;
-				else
-					cout << ", "<< it->second->name;
-			}
-			cout << "." << std::endl;
+
+		containers[cont]->status = "open";
+		if(containers[cont]->items.size() < 1){
+			cout << "no items in " << containers[cont]->name << endl;
+			return;
 		}
+		cout << cont << " contains: ";
+		for (map<string, Item*>::iterator it = containers[cont]->items.begin(); it != containers[cont]->items.end(); it++) {
+			if (it == containers[cont]->items.begin())
+				cout << it->second->name;
+			else
+				cout << ", "<< it->second->name;
+		}
+		cout << "." << std::endl;
 	}
 	//search containers in room
 	else if (c_room->containers.find(cont) != c_room->containers.end()){

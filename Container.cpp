@@ -14,7 +14,7 @@ Container::Container(xml_node<>* root){
 	string n;
 	string v;
 
-	this->status = "open";
+	this->status = "closed";
 
 	while(root != nullptr) {
 		n = root->name();
