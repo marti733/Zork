@@ -466,6 +466,7 @@ void Game::getInventory(){
 			else
 				cout << ", "<< it->second->name;
 		}
+		cout << endl;
 	}
 }
 
@@ -646,7 +647,7 @@ void Game::openObject(string command){
 			else
 				cout << ", "<< it->second->name;
 		}
-		cout << "." << std::endl;
+		cout << endl;
 	}
 	//search containers in room
 	else if (c_room->containers.find(cont) != c_room->containers.end()){
@@ -663,6 +664,7 @@ void Game::openObject(string command){
 				else
 					cout << ", "<< it->second->name;
 			}
+			cout << endl;
 		}
 	}
 	else {
@@ -711,7 +713,7 @@ void Game::readItem(string command) {
 		if(inventory[item]->writing != "")
 			cout << inventory[item]->writing << endl;
 		else
-			cout << "Error" << endl;
+			cout << "Nothing written" << endl;
 	}
 	else {
 		cout << "Error" << endl;
