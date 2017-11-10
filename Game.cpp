@@ -74,7 +74,7 @@ void Game::parseXML(xml_node<> * root){
 			Creature* creature = new Creature(root->first_node());
 			creatures[creature->name] = creature;
 		} else {
-			cout << "Error: Not a supported object" << endl;
+			cout << "Error" << endl;
 		}
 
 		root = root->next_sibling();
@@ -105,7 +105,10 @@ void Game::setStatus(bool n) {
  * Parameter(s): xml filename
  * Return: void */
 void Game::runGame(string filename) {
-	this->getSetup(filename);
+	bool setup = getSetup(filename);
+	if(!setup) {
+		return;
+	}
 
 	setupRoom("Entrance");
 
@@ -455,7 +458,7 @@ void Game::getInventory(){
 		cout << "Inventory: empty" << std::endl;
 	}
 	else {
-		cout << "Your inventory contains: ";
+		cout << "Inventory: ";
 		for (map<string, Item*>::iterator it = inventory.begin(); it != inventory.end(); it++)
 		{
 			if (it == inventory.begin())
@@ -463,7 +466,6 @@ void Game::getInventory(){
 			else
 				cout << ", "<< it->second->name;
 		}
-		cout << "." << std::endl;
 	}
 }
 
@@ -484,7 +486,7 @@ void Game::takeItem(string command){
 
 	//Check if item is already in inventory
 	if(inventory.find(item) != inventory.end()){
-		cout << "The " << item << " is already in your inventory." << endl;
+		cout << "Error" << endl;
 		return;
 	}
 
@@ -496,7 +498,7 @@ void Game::takeItem(string command){
 			if(c_container->items.find(item) != c_container->items.end()) {
 				inventory[item] = c_container->items[item];
 				c_container->items.erase(item);
-				cout << "The " <<  item << " was taken from " << c_container->name << " and added to your inventory." << endl;
+				cout << "Item " <<  item << " added to inventory." << endl;
 				return;
 			}
 		}
@@ -506,7 +508,7 @@ void Game::takeItem(string command){
 	if(c_room->items.find(item) != c_room->items.end()) {
 		inventory[item] = c_room->items[item];
 		c_room->items.erase(item);
-		cout << "The " <<  item << " was taken from " << c_room->name << " and added to your inventory." <<endl;
+		cout << "Item " <<  item << " added to inventory." <<endl;
 		return;
 	}
 
@@ -518,13 +520,13 @@ void Game::takeItem(string command){
 			if(c_container->items.find(item) != c_container->items.end()) {
 				inventory[item] = c_container->items[item];
 				c_container->items.erase(item);
-				cout << "The " <<  item << " was taken from " << c_container->name << " and added to your inventory." << endl;
+				cout << "Item " <<  item << " added to inventory." << endl;
 				return;
 			}
 		}
 	}
 
-	cout << "The " <<  item << " does not exist, try opening a container." << endl;
+	cout << "Error" << endl;
 }
 
 /* Adds the item to the containers inventory and and prints “Item (item) added to (container).”
@@ -547,7 +549,7 @@ void Game::putItem(string command){
 	Item* item;
 
 	if(inventory.find(itemFind) == inventory.end()){
-		cout << "The " << itemFind << " is not in your inventory" << endl;
+		cout << "Error" << endl;
 		return;
 	}
 	else{
@@ -558,7 +560,7 @@ void Game::putItem(string command){
 	if(containers.find(container) != containers.end()){
 		if(containers[container]->accepts.size() > 0){
 			for(int i = 0; i < containers[container]->accepts.size(); i ++){
-				cout << itemFind << " added to " << container << endl;
+				cout << "Item " <<itemFind << " added to " << container << "." << endl;
 				containers[container]->items[itemFind] = item;
 				inventory.erase(itemFind);
 				checkTriggers("");
@@ -566,14 +568,14 @@ void Game::putItem(string command){
 			}
 		}
 		else if(containers[container]->status == "open"){
-			cout << itemFind << " added to " << container << endl;
+			cout << "Item " <<itemFind << " added to " << container << "." << endl;
 			containers[container]->items[itemFind] = item;
 			inventory.erase(itemFind);
 			checkTriggers("");
 			return;
 		}
 		else{
-			cout << itemFind << " cannot be put in " << container << endl;
+			cout << "Error" << endl;
 			return;
 		}
 	}
@@ -582,7 +584,7 @@ void Game::putItem(string command){
 		if(rooms[location]->containers[container]->accepts.size() > 0){
 			for(int i = 0; i < rooms[location]->containers[container]->accepts.size(); i ++){
 				if(rooms[location]->containers[container]->accepts[i] == itemFind){
-					cout << itemFind << " added to " << container << endl;
+					cout << "Item " <<itemFind << " added to " << container << "." << endl;
 					rooms[location]->containers[container]->items[itemFind] = item;
 					inventory.erase(itemFind);
 					checkTriggers("");
@@ -591,20 +593,20 @@ void Game::putItem(string command){
 			}
 		}
 		else if(rooms[location]->containers[container]->status == "open"){
-			cout << itemFind << " added to " << container << endl;
+			cout << "Item " <<itemFind << " added to " << container << "." << endl;
 			rooms[location]->containers[container]->items[itemFind] = item;
 			inventory.erase(itemFind);
 			checkTriggers("");
 			return;
 		}
 		else{
-			cout << container << " is not open" << endl;
+			cout << "Error" << endl;
 			return;
 		}
 	}
 
 	else {
-		cout << container << " is not here" << endl;
+		cout << "Error" << endl;
 	}
 
 }
@@ -628,13 +630,13 @@ void Game::openObject(string command){
 	//search containers in game
 	if(containers.find(cont) != containers.end()){
 		if(containers[cont]->status == "locked"){
-			cout << cont << " is locked." << endl;
+			cout << "Error" << endl;
 			return;
 		}
 
 		containers[cont]->status = "open";
 		if(containers[cont]->items.size() < 1){
-			cout << "no items in " << containers[cont]->name << endl;
+			cout << "Error" << endl;
 			return;
 		}
 		cout << cont << " contains: ";
@@ -649,11 +651,10 @@ void Game::openObject(string command){
 	//search containers in room
 	else if (c_room->containers.find(cont) != c_room->containers.end()){
 		if (c_room->containers[cont]->status == "locked"){
-			cout << cont << " is locked." << endl;
+			cout << "Error" << endl;
 		}
 		else {
 			c_room->containers[cont]->status = "open";
-			cout << "in room " << endl;
 			cout << cont << " contains: ";
 			for (map<string, Item*>::iterator it = c_room->containers[cont]->items.begin(); it != c_room->containers[cont]->items.end(); it++)
 			{
@@ -662,11 +663,10 @@ void Game::openObject(string command){
 				else
 					cout << ", "<< it->second->name;
 			}
-			cout << "." << std::endl;
 		}
 	}
 	else {
-		cout << cont << " does not exist or it is not a container." << endl;
+		cout << "Error" << endl;
 	}
 
 
@@ -711,10 +711,10 @@ void Game::readItem(string command) {
 		if(inventory[item]->writing != "")
 			cout << inventory[item]->writing << endl;
 		else
-			cout << "The " << item << " does not have anything written on it." << endl;
+			cout << "Error" << endl;
 	}
 	else {
-		cout << "The " << item << " is not in your inventory." << endl;
+		cout << "Error" << endl;
 	}
 
 }
@@ -740,7 +740,7 @@ void Game::dropItem(string command){
 		cout << item << " dropped" << endl;
 	}
 	else {
-		cout << "The " << item << " is not in your inventory." << endl;
+		cout << "Error" << endl;
 	}
 
 }
@@ -759,12 +759,12 @@ void Game::turnOn(string command){
 
 	string item = com[2];
 	if(inventory.find(item) == inventory.end()){
-		cout << "The " << item << " is not in your inventory." << endl;
+		cout << "Error" << endl;
 		return;
 	}
 
 	if (inventory[item]->turnon == nullptr){
-		cout << "The " << item << " cannot be turned on." << endl;
+		cout << "Error" << endl;
 		return;
 	}
 
@@ -795,14 +795,14 @@ void Game::attackCreature(string command){
 	string item = com[3];
 
 	if(inventory.find(item) == inventory.end()){
-		cout << "The " << item << " is not in your inventory" << endl;
+		cout << "Error" << endl;
 		return;
 	}
 
 	//Creature is in game
 	if(creatures.find(creature) != creatures.end()){
 		//Find vulnerability
-		if(creatures[creature]->vulnerability.find(item) != creatures[creature]->vulnerability.end()) {
+		if((creatures[creature]->vulnerability.find(item) != creatures[creature]->vulnerability.end()) ||  (creatures[creature]->vulnerability.size() == 0)){
 			cout << "You assault " << creature << " with " << item << "." << endl;
 
 			if(creatures[creature]->attack != nullptr){
@@ -825,22 +825,18 @@ void Game::attackCreature(string command){
 					return;
 				}
 				else{
-					cout << "The conditions for attack haven't been met" << endl;
+					cout << "Error" << endl;
 				}
 			}
+
 		}
 		else
-			cout << "The attack failed because " << creature << " is not affected by " << item << endl;
+			cout << "Error" << endl;
 	}
-
-	//Creature is in room
-	else if(rooms[location]->creatures.find(creature) != rooms[location]->creatures.end()){
-
-	}
-	else {
-		cout << "The " << creature << " is not here" << endl;
-	}
+	else
+		cout << "Error" << endl;
 }
+
 
 /* ------------------------------------------------------- INTERNAL COMMANDS --------------------------------------------------------------------- */
 
@@ -1033,7 +1029,7 @@ void Game::deleteObject(string command){
 			}
 		}
 	}
-	cout << "Error: object not found. Could not delete." << endl;
+	cout << "Error" << endl;
 }
 
 /* Creates new status for object that can be checked by triggers
@@ -1114,7 +1110,7 @@ void Game::updateObject(string command){
 			}
 		}
 	}
-	cout << "Error: object not found. No update made." << endl;
+	cout << "Error" << endl;
 
 }
 

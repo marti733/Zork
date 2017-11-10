@@ -15,12 +15,12 @@ using namespace std;
 
 int main(int argc, char ** argv) {
 
-	/*if (argc < 2) {
+	if (argc < 2) {
 		std::cout << "Error expected input format: Zork filename.xml" << std::endl;
 		return EXIT_FAILURE;
-	}*/
+	}
 
-	string file = "samples/containersample.xml";
+	string file = argv[1];
 
 	Game* g = new Game(1);
 	g->runGame(file);
